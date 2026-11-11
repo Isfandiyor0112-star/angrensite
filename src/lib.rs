@@ -13,25 +13,29 @@ type HmacSha256 = Hmac<Sha256>;
 
 static MONGO_CLIENT: OnceCell<Client> = OnceCell::const_new();
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct ParticipantResult {
-    #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
-    pub id: Option<ObjectId>,
-    pub full_name: String,
-    pub phone: String,
-    pub school: String,
-    pub score: i32,          // Maksimal 60 ball (30 * 2)
-    pub correct_count: i32,  // 30 tadan nechta topdi
-    pub time_ms: i64,        // Millisekundlarda sarflangan aniq vaqt
-    pub created_at: String,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct SessionPayload {
     pub full_name: String,
     pub phone: String,
     pub school: String,
+    #[serde(default)]
+    pub mahalla: String,
     pub started_at_ms: i64,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct ParticipantResult {
+    #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
+    pub id: Option<mongodb::bson::oid::ObjectId>,
+    pub full_name: String,
+    pub phone: String,
+    pub school: String,
+    #[serde(default)]
+    pub mahalla: String,
+    pub score: usize,
+    pub correct_count: usize,
+    pub time_ms: i64,
+    pub created_at: String,
 }
 
 #[derive(Debug, Serialize)]
