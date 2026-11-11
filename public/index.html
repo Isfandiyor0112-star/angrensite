@@ -9,31 +9,75 @@
   <style>
     * { font-family: 'Plus Jakarta Sans', sans-serif; }
     body {
-      background: radial-gradient(circle at 15% 20%, rgba(0, 153, 181, 0.35), transparent 45%),
-                  radial-gradient(circle at 85% 80%, rgba(30, 181, 58, 0.30), transparent 45%),
-                  linear-gradient(135deg, #061325 0%, #0b2239 50%, #071923 100%);
-      min-height: 100vh;
+      background-color: #06121c;
       color: #f8fafc;
       overflow-x: hidden;
+      min-height: 100vh;
     }
+    
+    /* Динамичный фон */
+    #flag-canvas { position: fixed; inset: 0; width: 100%; height: 100%; z-index: -2; }
+    .veil {
+      position: fixed; inset: 0; z-index: -1;
+      background: radial-gradient(ellipse at 30% 20%, rgba(6, 18, 28, 0.4), rgba(6, 18, 28, 0.9) 80%);
+    }
+
+    /* Эффект стекла */
     .glass {
-      background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(22px);
-      -webkit-backdrop-filter: blur(22px);
-      border: 1px solid rgba(255, 255, 255, 0.16);
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
     }
     .glass-card {
-      background: rgba(255, 255, 255, 0.06);
-      backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      transition: all 0.25s ease;
+      background: rgba(255, 255, 255, 0.04);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: all 0.3s ease;
     }
     .glass-card:hover {
-      background: rgba(255, 255, 255, 0.11);
+      background: rgba(255, 255, 255, 0.08);
       border-color: rgba(0, 153, 181, 0.5);
-      transform: translateY(-2px);
+      transform: translateY(-4px);
     }
+
+    /* Плавное переключение вкладок */
+    .view-section {
+      display: none;
+      animation: slideFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .view-section.active { display: block; }
+    
+    @keyframes slideFadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Плавность кнопок */
+    .nav-btn {
+      transition: all 0.3s ease;
+    }
+    .nav-btn.active {
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+    }
+
+    /* Таймер обратного отсчета */
+    .cd-container { display: flex; gap: 10px; margin-top: 15px; margin-bottom: 25px; }
+    .cd-box {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 14px;
+      padding: 10px 14px;
+      text-align: center;
+      min-width: 65px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+    .cd-box b { display: block; font-size: 22px; font-weight: 800; line-height: 1.2; color: #38bdf8; }
+    .cd-box small { color: #94a3b8; font-size: 11px; text-transform: uppercase; font-weight: 600; }
+
     .flag-ribbon {
       height: 6px;
       background: linear-gradient(90deg, #0099B5 0%, #0099B5 32%, #CE1126 32%, #CE1126 34%, #FFFFFF 34%, #FFFFFF 66%, #CE1126 66%, #CE1126 68%, #1EB53A 68%, #1EB53A 100%);
@@ -41,58 +85,70 @@
   </style>
 </head>
 <body class="pb-16">
+  <!-- Живой фон -->
+  <canvas id="flag-canvas"></canvas>
+  <div class="veil"></div>
+
   <div class="flag-ribbon w-full sticky top-0 z-50"></div>
 
   <!-- Navbar -->
-  <header class="max-w-6xl mx-auto px-4 pt-5 pb-3 flex flex-wrap items-center justify-between gap-4">
+  <header class="max-w-6xl mx-auto px-4 pt-5 pb-3 flex flex-wrap items-center justify-between gap-4 sticky top-0 z-40">
     <div class="flex items-center gap-3">
-      <div class="w-11 h-11 rounded-2xl glass flex items-center justify-center text-2xl shadow-lg">🇺🇿</div>
-      <div>
+      <div class="w-11 h-11 rounded-2xl glass flex items-center justify-center text-2xl shadow-lg transition-transform duration-300 hover:scale-110 cursor-pointer" onclick="switchTab('quiz')">🇺🇿</div>
+      <div class="transition-opacity duration-300" id="headerTextGroup">
         <h1 id="navTitle" class="text-lg md:text-xl font-extrabold tracking-tight text-white">Davlat Bayrog‘i Viktorinasi</h1>
         <p id="navSub" class="text-xs text-cyan-300/90 font-medium">Angren shahri yoshlari va maktab o‘quvchilari uchun</p>
       </div>
     </div>
 
     <div class="flex flex-wrap items-center gap-2">
-      <button onclick="switchTab('quiz')" id="tabQuiz" class="px-4 py-2 rounded-xl text-sm font-semibold glass bg-cyan-500/30 border-cyan-400/50">Viktorina</button>
-      <button onclick="switchTab('facts')" id="tabFacts" class="px-4 py-2 rounded-xl text-sm font-semibold glass">Qiziqarli faktlar</button>
-      <button onclick="switchTab('leaderboard')" id="tabLeaderboard" class="px-4 py-2 rounded-xl text-sm font-semibold glass">Reyting (60 ball)</button>
-      <button onclick="switchTab('admin')" id="tabAdmin" class="px-3 py-2 rounded-xl text-sm font-semibold glass text-amber-300">Admin</button>
+      <button onclick="switchTab('quiz')" id="tabQuiz" class="nav-btn active px-4 py-2 rounded-xl text-sm font-semibold glass text-slate-300 hover:text-white">Viktorina</button>
+      <button onclick="switchTab('facts')" id="tabFacts" class="nav-btn px-4 py-2 rounded-xl text-sm font-semibold glass text-slate-300 hover:text-white">Qiziqarli faktlar</button>
+      <button onclick="switchTab('leaderboard')" id="tabLeaderboard" class="nav-btn px-4 py-2 rounded-xl text-sm font-semibold glass text-slate-300 hover:text-white">Reyting (60 ball)</button>
+      <button onclick="switchTab('admin')" id="tabAdmin" class="nav-btn px-3 py-2 rounded-xl text-sm font-semibold glass text-amber-400 hover:text-amber-200">Admin</button>
 
-      <div class="flex rounded-xl glass p-1 ml-1">
-        <button onclick="setLang('uz')" id="btnUz" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-cyan-500 text-white">O‘ZB</button>
-        <button onclick="setLang('ru')" id="btnRu" class="px-2.5 py-1 rounded-lg text-xs font-bold text-slate-300">РУС</button>
+      <div class="flex rounded-xl glass p-1 ml-1 transition-all duration-300">
+        <button onclick="setLang('uz')" id="btnUz" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-cyan-500 text-white transition-all duration-300 shadow-md">O‘ZB</button>
+        <button onclick="setLang('ru')" id="btnRu" class="px-2.5 py-1 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition-all duration-300">РУС</button>
       </div>
     </div>
   </header>
 
-  <main class="max-w-5xl mx-auto px-4 mt-6">
+  <main class="max-w-5xl mx-auto px-4 mt-8">
     <!-- 1. VIKTORINA BO'LIMI -->
-    <section id="secQuiz">
+    <section id="secQuiz" class="view-section active">
       <!-- Ro'yxatdan o'tish -->
       <div id="stepRegister" class="glass rounded-3xl p-6 md:p-10 max-w-2xl mx-auto">
-        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-500/20 border border-cyan-400/30 text-cyan-200 text-xs font-semibold mb-4">
-          <span id="badgeDate">✨ 18-noyabr — O‘zbekiston Respublikasi Davlat bayrog‘i qabul qilingan kun</span>
-        </div>
-        <h2 id="regTitle" class="text-2xl md:text-3xl font-extrabold mb-2">Bilimingizni sinab ko‘ring!</h2>
-        <p id="regDesc" class="text-slate-300 text-sm mb-6">
+        <h2 id="regTitle" class="text-3xl md:text-4xl font-extrabold mb-3 bg-clip-text text-transparent bg-gradient-to-r from-cyan-300 to-emerald-300">Bilimingizni sinab ko‘ring!</h2>
+        <p id="regDesc" class="text-slate-300 text-sm mb-2 leading-relaxed">
           Viktorina 30 ta savoldan iborat. Har bir to‘g‘ri javob 2 ball (maksimal 60 ball). Bir xil ball to‘plagan ishtirokchilar sarflangan vaqt bo‘yicha saralanadi.
         </p>
+        
+        <!-- Dinamik Taymer -->
+        <div class="flex flex-wrap items-center gap-4 mb-6">
+          <div class="cd-container" id="countdownTimer">
+            <div class="cd-box"><b id="cdDay">00</b><small id="lblDay">Kun</small></div>
+            <div class="cd-box"><b id="cdHour">00</b><small id="lblHour">Soat</small></div>
+            <div class="cd-box"><b id="cdMin">00</b><small id="lblMin">Daq</small></div>
+            <div class="cd-box"><b id="cdSec">00</b><small id="lblSec">Son</small></div>
+          </div>
+          <div class="text-xs text-slate-400 font-medium max-w-[120px]" id="cdDesc">Bayroq qabul qilingan kunga qadar (18-noyabr)</div>
+        </div>
 
-        <form onsubmit="startQuiz(event)" class="space-y-4">
+        <form onsubmit="startQuiz(event)" class="space-y-4 relative z-10">
           <div>
-            <label id="lblName" class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">F.I.Sh. (To‘liq ism va familiya)</label>
-            <input id="inpName" type="text" required placeholder="Masalan: Imomaliyev Isfandiyor" class="w-full px-4 py-3 rounded-xl bg-slate-900/60 border border-white/15 text-white focus:outline-none focus:border-cyan-400" />
+            <label id="lblName" class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5 transition-colors">F.I.Sh. (To‘liq ism va familiya)</label>
+            <input id="inpName" type="text" required placeholder="Masalan: Imomaliyev Isfandiyor" class="w-full px-4 py-3 rounded-xl bg-slate-900/50 border border-white/10 text-white focus:outline-none focus:border-cyan-400 focus:bg-slate-900/80 transition-all" />
           </div>
           <div>
-            <label id="lblPhone" class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">Telefon raqamingiz</label>
-            <input id="inpPhone" type="tel" required placeholder="+998 90 123 45 67" class="w-full px-4 py-3 rounded-xl bg-slate-900/60 border border-white/15 text-white focus:outline-none focus:border-cyan-400" />
+            <label id="lblPhone" class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5 transition-colors">Telefon raqamingiz</label>
+            <input id="inpPhone" type="tel" required placeholder="+998 90 123 45 67" class="w-full px-4 py-3 rounded-xl bg-slate-900/50 border border-white/10 text-white focus:outline-none focus:border-cyan-400 focus:bg-slate-900/80 transition-all" />
           </div>
           <div>
-            <label id="lblSchool" class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">Ta'lim olayotgan maktabingiz (Angren shahri)</label>
-            <select id="inpSchool" required class="w-full px-4 py-3 rounded-xl bg-slate-900/90 border border-white/15 text-white focus:outline-none focus:border-cyan-400"></select>
+            <label id="lblSchool" class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5 transition-colors">Ta'lim olayotgan maktabingiz (Angren shahri)</label>
+            <select id="inpSchool" required class="w-full px-4 py-3 rounded-xl bg-slate-900/80 border border-white/10 text-white focus:outline-none focus:border-cyan-400 transition-all"></select>
           </div>
-          <button type="submit" id="btnStart" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-400 hover:to-emerald-400 text-white font-bold text-base shadow-lg transition">
+          <button type="submit" id="btnStart" class="w-full py-4 mt-2 rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-400 hover:to-emerald-400 text-white font-extrabold text-lg shadow-[0_0_20px_rgba(6,182,212,0.4)] hover:shadow-[0_0_25px_rgba(16,185,129,0.6)] hover:-translate-y-1 transition-all duration-300">
             Viktorinani boshlash 🚀
           </button>
         </form>
@@ -102,142 +158,142 @@
       <div id="stepPlay" class="hidden glass rounded-3xl p-6 md:p-10 max-w-3xl mx-auto">
         <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
           <div class="flex items-center gap-3">
-            <span id="qCounter" class="px-3.5 py-1.5 rounded-xl bg-cyan-500/20 border border-cyan-400/30 text-cyan-200 font-bold text-sm">1 / 30</span>
+            <span id="qCounter" class="px-3.5 py-1.5 rounded-xl bg-cyan-500/20 border border-cyan-400/30 text-cyan-200 font-bold text-sm shadow-inner">1 / 30</span>
             <span id="lblPerScore" class="text-xs text-slate-300">+2 ball / savol</span>
           </div>
-          <div class="px-4 py-1.5 rounded-xl bg-slate-900/70 border border-white/15 font-mono text-base font-bold text-emerald-300">
+          <div class="px-4 py-1.5 rounded-xl bg-slate-900/70 border border-white/15 font-mono text-base font-bold text-emerald-400 shadow-md">
             ⏱ <span id="liveTimer">00:00.00</span>
           </div>
         </div>
 
-        <div class="w-full h-2 rounded-full bg-white/10 mb-6 overflow-hidden">
-          <div id="progressBar" class="h-full bg-gradient-to-r from-cyan-400 to-emerald-400 transition-all duration-300" style="width: 3.3%"></div>
+        <div class="w-full h-2.5 rounded-full bg-slate-900/80 mb-8 overflow-hidden border border-white/5 relative">
+          <div id="progressBar" class="absolute top-0 left-0 h-full bg-gradient-to-r from-cyan-400 to-emerald-400 transition-all duration-500 ease-out shadow-[0_0_10px_rgba(52,211,153,0.8)]" style="width: 3.3%"></div>
         </div>
 
-        <h3 id="qText" class="text-xl md:text-2xl font-bold mb-6 leading-snug"></h3>
+        <h3 id="qText" class="text-xl md:text-2xl font-bold mb-6 leading-snug tracking-wide"></h3>
         <div id="optionsContainer" class="space-y-3"></div>
       </div>
 
       <!-- Yakuniy natija va Sertifikat -->
       <div id="stepResult" class="hidden glass rounded-3xl p-6 md:p-10 max-w-3xl mx-auto text-center">
-        <div class="text-5xl mb-3">🏆</div>
-        <h2 id="resTitle" class="text-2xl md:text-3xl font-extrabold mb-2">Natijangiz qabul qilindi!</h2>
-        <p id="resStudent" class="text-cyan-300 font-medium mb-6"></p>
+        <div class="text-6xl mb-4 animate-bounce">🏆</div>
+        <h2 id="resTitle" class="text-2xl md:text-4xl font-extrabold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-amber-200 to-yellow-500">Natijangiz qabul qilindi!</h2>
+        <p id="resStudent" class="text-cyan-200 font-medium mb-8 text-lg"></p>
 
-        <div class="grid grid-cols-3 gap-3 mb-6">
-          <div class="glass-card rounded-2xl p-4">
-            <div id="lblResScore" class="text-xs text-slate-400 mb-1">To‘plangan ball</div>
-            <div id="resScore" class="text-2xl md:text-3xl font-extrabold text-emerald-400">0 / 60</div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+          <div class="glass-card rounded-2xl p-5 shadow-lg">
+            <div id="lblResScore" class="text-xs text-slate-400 mb-2 uppercase tracking-wider font-semibold">To‘plangan ball</div>
+            <div id="resScore" class="text-3xl font-extrabold text-emerald-400">0 / 60</div>
           </div>
-          <div class="glass-card rounded-2xl p-4">
-            <div id="lblResCorrect" class="text-xs text-slate-400 mb-1">To‘g‘ri javoblar</div>
-            <div id="resCorrect" class="text-2xl md:text-3xl font-extrabold text-cyan-300">0 / 30</div>
+          <div class="glass-card rounded-2xl p-5 shadow-lg">
+            <div id="lblResCorrect" class="text-xs text-slate-400 mb-2 uppercase tracking-wider font-semibold">To‘g‘ri javoblar</div>
+            <div id="resCorrect" class="text-3xl font-extrabold text-cyan-300">0 / 30</div>
           </div>
-          <div class="glass-card rounded-2xl p-4">
-            <div id="lblResTime" class="text-xs text-slate-400 mb-1">Sarflangan vaqt</div>
-            <div id="resTime" class="text-xl md:text-2xl font-extrabold text-amber-300 font-mono">0.00 s</div>
+          <div class="glass-card rounded-2xl p-5 shadow-lg">
+            <div id="lblResTime" class="text-xs text-slate-400 mb-2 uppercase tracking-wider font-semibold">Sarflangan vaqt</div>
+            <div id="resTime" class="text-2xl font-extrabold text-amber-300 font-mono">0.00 s</div>
           </div>
         </div>
 
-        <!-- Sertifikat Preview Canvas -->
-        <div class="mb-6">
-          <p id="certPreviewLabel" class="text-xs uppercase tracking-wider text-slate-300 font-semibold mb-3">✨ Maxsus elektron sertifikatingiz tayyor:</p>
-          <div class="rounded-2xl overflow-hidden border border-white/20 shadow-2xl bg-slate-950/60 p-2">
+        <!-- Sertifikat Preview -->
+        <div class="mb-8">
+          <p id="certPreviewLabel" class="text-xs uppercase tracking-widest text-emerald-300 font-bold mb-3">✨ Maxsus elektron sertifikatingiz tayyor ✨</p>
+          <div class="rounded-2xl overflow-hidden border border-white/20 shadow-[0_0_30px_rgba(251,191,36,0.15)] bg-slate-950/60 p-2 transform transition-transform hover:scale-[1.02] duration-300">
             <canvas id="certCanvas" width="1600" height="1130" class="w-full h-auto rounded-xl"></canvas>
           </div>
         </div>
 
-        <div class="flex flex-wrap items-center justify-center gap-3">
-          <button onclick="downloadCertificate()" id="btnDownloadCert" class="px-6 py-3.5 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 font-extrabold text-slate-950 shadow-lg transition flex items-center gap-2">
-            <span>📥 Sertifikatni yuklab olish (PNG)</span>
+        <div class="flex flex-wrap items-center justify-center gap-4">
+          <button onclick="downloadCertificate()" id="btnDownloadCert" class="px-8 py-4 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 font-extrabold text-slate-900 shadow-xl hover:shadow-[0_0_20px_rgba(251,191,36,0.5)] hover:-translate-y-1 transition-all duration-300 flex items-center gap-2 text-lg">
+            <span>📥 Sertifikatni yuklab olish</span>
           </button>
-          <button onclick="switchTab('leaderboard')" id="btnViewLb" class="px-6 py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-400 hover:to-emerald-400 font-bold text-white shadow-lg transition">
-            Umumiy reytingni ko‘rish 📊
+          <button onclick="switchTab('leaderboard')" id="btnViewLb" class="px-8 py-4 rounded-xl bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 font-bold text-white shadow-lg hover:-translate-y-1 transition-all duration-300 text-lg border border-cyan-400/30">
+            Reytingni ko‘rish 📊
           </button>
         </div>
       </div>
     </section>
 
     <!-- 2. QIZIQARLI FAKTLAR BO'LIMI -->
-    <section id="secFacts" class="hidden">
+    <section id="secFacts" class="view-section">
       <div class="glass rounded-3xl p-6 md:p-8 mb-6">
-        <h2 id="factsTitle" class="text-2xl md:text-3xl font-extrabold mb-2">Davlat bayrog‘imiz haqida qiziqarli faktlar</h2>
-        <p id="factsSub" class="text-slate-300 text-sm">Tarixiy ma'lumotlar, aniq o‘lchamlar va davlat ramzining ma'nolari.</p>
+        <h2 id="factsTitle" class="text-3xl font-extrabold mb-2 text-white">Davlat bayrog‘imiz haqida qiziqarli faktlar</h2>
+        <p id="factsSub" class="text-cyan-200 text-sm">Tarixiy ma'lumotlar, aniq o‘lchamlar va davlat ramzining ma'nolari.</p>
       </div>
       <div id="factsGrid" class="grid md:grid-cols-2 gap-4"></div>
     </section>
 
-    <!-- 3. REYTING BO'LIMI (Talab bo'yicha: O'quvchilar va Maktablararo reyting) -->
-    <section id="secLeaderboard" class="hidden">
-      <div class="glass rounded-3xl p-6 md:p-8 mb-6">
-        <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+    <!-- 3. REYTING BO'LIMI -->
+    <section id="secLeaderboard" class="view-section">
+      <div class="glass rounded-3xl p-6 md:p-10 mb-6">
+        <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
           <div>
-            <h2 id="lbSchoolTitle" class="text-2xl font-extrabold">Angren shahri maktablari jamoaviy reytingi</h2>
-            <p id="lbSchoolSub" class="text-xs text-slate-300">Maktablar bo‘yicha faollik va ishtirokchilarning o‘rtacha ballari</p>
+            <h2 id="lbSchoolTitle" class="text-2xl md:text-3xl font-extrabold text-white">Maktablar jamoaviy reytingi</h2>
+            <p id="lbSchoolSub" class="text-xs text-cyan-200 mt-1">Maktablar bo‘yicha faollik va ishtirokchilarning o‘rtacha ballari</p>
           </div>
-          <button onclick="loadLeaderboard()" class="px-4 py-2 rounded-xl glass text-xs font-bold text-cyan-300 hover:bg-white/10">🔄 Yangilash</button>
+          <button onclick="loadLeaderboard()" class="px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-sm font-bold text-cyan-300 transition-colors shadow-sm">🔄 Yangilash</button>
         </div>
 
-        <div class="overflow-x-auto mb-8">
+        <div class="overflow-x-auto mb-10 bg-slate-900/40 rounded-2xl border border-white/10">
           <table class="w-full text-left border-collapse">
             <thead>
-              <tr class="border-b border-white/15 text-xs uppercase text-slate-400">
-                <th class="py-3 px-3">#</th>
-                <th class="py-3 px-3">Ta'lim muassasasi (Maktab)</th>
-                <th class="py-3 px-3">Ishtirokchilar soni</th>
-                <th class="py-3 px-3">Umumiy ball</th>
-                <th class="py-3 px-3">O‘rtacha ball</th>
+              <tr class="border-b border-white/10 text-xs uppercase text-slate-400 bg-black/20">
+                <th class="py-4 px-4 font-bold">#</th>
+                <th class="py-4 px-4 font-bold">Ta'lim muassasasi</th>
+                <th class="py-4 px-4 font-bold">Ishtirokchilar</th>
+                <th class="py-4 px-4 font-bold">Umumiy ball</th>
+                <th class="py-4 px-4 font-bold text-amber-300">O‘rtacha ball</th>
               </tr>
             </thead>
-            <tbody id="schoolLbBody" class="divide-y divide-white/10 text-sm"></tbody>
+            <tbody id="schoolLbBody" class="divide-y divide-white/5 text-sm"></tbody>
           </table>
         </div>
 
-        <div class="border-t border-white/15 pt-6">
-          <h2 id="lbStudentTitle" class="text-xl font-extrabold mb-2">Ishtirokchilarning shaxsiy reytingi</h2>
-          <p id="lbStudentSub" class="text-xs text-slate-300 mb-4">Saralash: 1) Ball (maks 60) • 2) Eng qisqa vaqt (millisekund)</p>
-          <div class="overflow-x-auto">
+        <div class="border-t border-white/10 pt-8">
+          <h2 id="lbStudentTitle" class="text-2xl font-extrabold mb-1 text-white">Ishtirokchilarning shaxsiy reytingi</h2>
+          <p id="lbStudentSub" class="text-xs text-slate-400 mb-6 uppercase tracking-wider">Saralash: 1) Maks 60 ball • 2) Eng qisqa vaqt</p>
+          <div class="overflow-x-auto bg-slate-900/40 rounded-2xl border border-white/10">
             <table class="w-full text-left border-collapse">
               <thead>
-                <tr class="border-b border-white/15 text-xs uppercase text-slate-400">
-                  <th class="py-3 px-3">#</th>
-                  <th class="py-3 px-3">Ishtirokchi</th>
-                  <th class="py-3 px-3">Maktab</th>
-                  <th class="py-3 px-3">Ball</th>
-                  <th class="py-3 px-3">Vaqt</th>
+                <tr class="border-b border-white/10 text-xs uppercase text-slate-400 bg-black/20">
+                  <th class="py-4 px-4 font-bold">#</th>
+                  <th class="py-4 px-4 font-bold">Ishtirokchi</th>
+                  <th class="py-4 px-4 font-bold">Maktab</th>
+                  <th class="py-4 px-4 font-bold text-emerald-400">Ball</th>
+                  <th class="py-4 px-4 font-bold text-cyan-300">Vaqt</th>
                 </tr>
               </thead>
-              <tbody id="lbBody" class="divide-y divide-white/10 text-sm"></tbody>
+              <tbody id="lbBody" class="divide-y divide-white/5 text-sm"></tbody>
             </table>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- 4. ADMIN PANEL BO'LIMI -->
-    <section id="secAdmin" class="hidden">
-      <div class="glass rounded-3xl p-6 md:p-8">
-        <h2 class="text-2xl font-extrabold mb-4">Boshqaruv paneli (Admin)</h2>
-        <div class="flex flex-wrap gap-3 mb-6">
-          <input id="adminKeyInput" type="password" placeholder="Admin parolini kiriting" class="px-4 py-2.5 rounded-xl bg-slate-900/70 border border-white/15 text-white" />
-          <button onclick="loadAdminResults()" class="px-5 py-2.5 rounded-xl bg-cyan-500 font-bold text-white">Natijalarni ochish</button>
-          <button onclick="exportCSV()" class="px-5 py-2.5 rounded-xl bg-emerald-600 font-bold text-white">📥 Excel (CSV) yuklab olish</button>
+    <!-- 4. ADMIN PANEL -->
+    <section id="secAdmin" class="view-section">
+      <div class="glass rounded-3xl p-6 md:p-10">
+        <h2 class="text-3xl font-extrabold mb-6 text-amber-400">Boshqaruv paneli (Admin)</h2>
+        <div class="flex flex-wrap gap-3 mb-8">
+          <input id="adminKeyInput" type="password" placeholder="Admin parolini kiriting" class="px-5 py-3 rounded-xl bg-slate-900/70 border border-white/20 text-white focus:border-amber-400 focus:outline-none w-full md:w-auto flex-grow max-w-xs" />
+          <button onclick="loadAdminResults()" class="px-6 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 font-bold text-slate-900 transition-colors shadow-lg">Natijalarni ochish</button>
+          <button onclick="exportCSV()" class="px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 font-bold text-white transition-colors shadow-lg">📥 Excel (CSV)</button>
         </div>
 
-        <div class="overflow-x-auto">
+        <div class="overflow-x-auto bg-slate-900/40 rounded-2xl border border-white/10">
           <table class="w-full text-left border-collapse">
             <thead>
-              <tr class="border-b border-white/15 text-xs uppercase text-slate-400">
-                <th class="py-3 px-3">#</th>
-                <th class="py-3 px-3">F.I.Sh.</th>
-                <th class="py-3 px-3">Telefon raqami</th>
-                <th class="py-3 px-3">Maktab</th>
-                <th class="py-3 px-3">Ball (60)</th>
-                <th class="py-3 px-3">To‘g‘ri</th>
-                <th class="py-3 px-3">Vaqt</th>
+              <tr class="border-b border-white/10 text-xs uppercase text-slate-400 bg-black/20">
+                <th class="py-4 px-4 font-bold">#</th>
+                <th class="py-4 px-4 font-bold">F.I.Sh.</th>
+                <th class="py-4 px-4 font-bold">Telefon</th>
+                <th class="py-4 px-4 font-bold">Maktab</th>
+                <th class="py-4 px-4 font-bold text-emerald-400">Ball (60)</th>
+                <th class="py-4 px-4 font-bold">To‘g‘ri</th>
+                <th class="py-4 px-4 font-bold">Vaqt</th>
               </tr>
             </thead>
-            <tbody id="adminBody" class="divide-y divide-white/10 text-sm"></tbody>
+            <tbody id="adminBody" class="divide-y divide-white/5 text-sm"></tbody>
           </table>
         </div>
       </div>
@@ -245,6 +301,7 @@
   </main>
 
   <script>
+    // --- 1. JS ASOSLARI VA O'ZGARUVCHILAR ---
     let lang = 'uz';
     let questions = [];
     let currentIdx = 0;
@@ -266,151 +323,218 @@
 
     const facts = [
       {
-        uzT: "1991-yil 18-noyabr — Tarixiy sana",
-        ruT: "18 ноября 1991 года — Историческая дата",
-        uzD: "O‘zbekiston Respublikasi Oliy Kengashining navbatdan tashqari VII sessiyasida «O‘zbekiston Respublikasining Davlat bayrog‘i to‘g‘risida»gi Qonun qabul qilingan.",
-        ruD: "Закон «О Государственном флаге Республики Узбекистан» был принят на внеочередной VII сессии Верховного Совета Республики Узбекистан."
+        uzT: "1991-yil 18-noyabr — Tarixiy sana", ruT: "18 ноября 1991 года",
+        uzD: "O‘zbekiston Respublikasi Oliy Kengashining navbatdan tashqari VII sessiyasida Qonun qabul qilingan.", ruD: "Закон был принят на внеочередной VII сессии Верховного Совета."
       },
       {
-        uzT: "Aniq geometrik proporsiyalar (250 x 125 sm)",
-        ruT: "Точные геометрические пропорции (250 x 125 см)",
-        uzD: "Bayroqning uzunligi 250 sm, kengligi 125 sm. Uchta asosiy gorizontal yo‘lning har biri 40 sm, ikkita qizil hoshiya esa 2,5 sm dan iborat.",
-        ruD: "Длина флага составляет 250 см, ширина — 125 см. Каждая из трёх основных полос имеет ширину 40 см, а две красные каёмки — по 2,5 см."
+        uzT: "Aniq o‘lchamlar (250 x 125 sm)", ruT: "Точные размеры (250 x 125 см)",
+        uzD: "Bayroqning uzunligi 250 sm, kengligi 125 sm. Uchta asosiy yo‘lning har biri 40 sm, qizil hoshiya esa 2,5 sm.", ruD: "Длина флага 250 см, ширина 125 см. Полосы по 40 см, красные каёмки по 2,5 см."
       },
       {
-        uzT: "Moviy, Oq, Yashil va Qizil hoshiyalar ma'nosi",
-        ruT: "Значение голубого, белого, зелёного и красного цветов",
-        uzD: "Moviy rang — musaffo osmon va obihayot (Amir Temur tug‘i rangi), oq — tinchlik va poklik, yashil — yangilanayotgan tabiat, qizil chiziqlar — hayotiy qudrat irmoqlaridir.",
-        ruD: "Голубой цвет символизирует мирное небо и воду, белый — мир и чистоту, зелёный — обновление природы, красные линии — потоки жизненной силы."
+        uzT: "Ranglar ma'nosi", ruT: "Значение цветов",
+        uzD: "Moviy — musaffo osmon va obihayot (Temur tug‘i), oq — tinchlik, yashil — tabiat, qizil — hayotiy qudrat irmoqlari.", ruD: "Синий — небо и вода, белый — мир, зелёный — природа, красный — жизненная сила."
       },
       {
-        uzT: "Yangi oy va 12 yulduz siri",
-        ruT: "Символика полумесяца и 12 звёзд",
-        uzD: "Yangi oy mustaqilligimiz ramzi bo‘lsa, 12 ta besh qirrali yulduz (3, 4, 5 qatorda) qadimiy 12 yillik quyosh taqvimi va komillik timsolidir.",
-        ruD: "Полумесяц олицетворяет независимость, а 12 пятиконечных звёзд (в рядах по 3, 4 и 5) символизируют древний солнечный календарь и совершенство."
+        uzT: "Yangi oy va 12 yulduz", ruT: "Полумесяц и 12 звёзд",
+        uzD: "Yangi oy mustaqilligimiz ramzi. 12 yulduz — qadimiy 12 yillik quyosh taqvimi va komillik timsolidir.", ruD: "Полумесяц — символ независимости. 12 звёзд — древний солнечный календарь и совершенство."
       },
       {
-        uzT: "Koinot va Everest cho‘qqisida",
-        ruT: "В открытом космосе и на вершине Эвереста",
-        uzD: "1998-yilda kosmonavt Solijon Sharipov bayrog‘imizni «Mir» koinot stansiyasiga olib chiqqan, alpinist Rustam Radjapov esa Everest (8848 m) cho‘qqisiga o‘rnatgan.",
-        ruD: "В 1998 году космонавт Салижан Шарипов поднял флаг на орбитальную станцию «Мир», а альпинист Рустам Раджапов водрузил его на вершину Эвереста (8848 м)."
+        uzT: "Koinot va Everest cho‘qqisida", ruT: "В космосе и на Эвересте",
+        uzD: "1998-yilda kosmonavt S.Sharipov bayroqni «Mir» stansiyasiga, alpinist R.Radjapov esa Everestga (8848 m) olib chiqqan.", ruD: "В 1998 году космонавт С.Шарипов поднял флаг на станцию «Мир», а альпинист Р.Раджапов на Эверест."
       },
       {
-        uzT: "2023-yilgi yangi Qonun (O‘RQ-853)",
-        ruT: "Закон 2023 года о свободном использовании (ЗРУ-853)",
-        uzD: "2023-yil 7-iyulda imzolangan qonunga ko‘ra, fuqarolarga bayroqdan sport musobaqalari, bayramlar va xonadonlarda hurmat saqlagan holda erkin foydalanish huquqi berildi.",
-        ruD: "Закон от 7 июля 2023 года разрешил гражданам свободно использовать Государственный флаг дома, на спортивных и праздничных мероприятиях при соблюдении уважения."
+        uzT: "Erkin foydalanish huquqi (2023)", ruT: "Свободное использование (2023)",
+        uzD: "2023-yil 7-iyulda fuqarolarga bayroqdan bayramlar va xonadonlarda erkin foydalanish huquqi berildi.", ruD: "7 июля 2023 года гражданам разрешили свободно использовать флаг дома и на праздниках."
       }
     ];
 
     function initSchools() {
-      const sel = document.getElementById('inpSchool');
-      sel.innerHTML = schools.map(s => `<option value="${s}">${s}</option>`).join('');
+      document.getElementById('inpSchool').innerHTML = schools.map(s => `<option value="${s}">${s}</option>`).join('');
     }
 
     function renderFacts() {
-      const grid = document.getElementById('factsGrid');
-      grid.innerHTML = facts.map(f => `
-        <div class="glass-card rounded-2xl p-5">
-          <h3 class="text-lg font-bold text-cyan-300 mb-2">${lang === 'uz' ? f.uzT : f.ruT}</h3>
-          <p class="text-sm text-slate-300 leading-relaxed">${lang === 'uz' ? f.uzD : f.ruD}</p>
+      document.getElementById('factsGrid').innerHTML = facts.map(f => `
+        <div class="glass-card rounded-2xl p-6 shadow-md">
+          <h3 class="text-xl font-bold text-cyan-300 mb-3">${lang === 'uz' ? f.uzT : f.ruT}</h3>
+          <p class="text-sm text-slate-300 leading-relaxed font-medium">${lang === 'uz' ? f.uzD : f.ruD}</p>
         </div>
       `).join('');
     }
 
+    // --- 2. TIL ALMASHTIRISH VA PLAVNOST ---
     function setLang(l) {
       lang = l;
-      document.getElementById('btnUz').className = l === 'uz' ? 'px-2.5 py-1 rounded-lg text-xs font-bold bg-cyan-500 text-white' : 'px-2.5 py-1 rounded-lg text-xs font-bold text-slate-300';
-      document.getElementById('btnRu').className = l === 'ru' ? 'px-2.5 py-1 rounded-lg text-xs font-bold bg-cyan-500 text-white' : 'px-2.5 py-1 rounded-lg text-xs font-bold text-slate-300';
+      // Button stylings smoothly
+      document.getElementById('btnUz').className = l === 'uz' ? 'px-3 py-1.5 rounded-lg text-xs font-bold bg-cyan-500 text-white shadow-md transition-all duration-300' : 'px-3 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition-all duration-300';
+      document.getElementById('btnRu').className = l === 'ru' ? 'px-3 py-1.5 rounded-lg text-xs font-bold bg-cyan-500 text-white shadow-md transition-all duration-300' : 'px-3 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition-all duration-300';
 
-      document.getElementById('navTitle').textContent = l === 'uz' ? "Davlat Bayrog‘i Viktorinasi" : "Викторина о Государственном флаге";
-      document.getElementById('navSub').textContent = l === 'uz' ? "Angren shahri yoshlari va maktab o‘quvchilari uchun" : "Для молодёжи и школьников города Ангрена";
-      document.getElementById('tabQuiz').textContent = l === 'uz' ? "Viktorina" : "Викторина";
-      document.getElementById('tabFacts').textContent = l === 'uz' ? "Qiziqarli faktlar" : "Интересные факты";
-      document.getElementById('tabLeaderboard').textContent = l === 'uz' ? "Reyting (60 ball)" : "Рейтинг (60 баллов)";
-      document.getElementById('regTitle').textContent = l === 'uz' ? "Bilimingizni sinab ko‘ring!" : "Проверьте свои знания!";
-      document.getElementById('regDesc').textContent = l === 'uz'
-        ? "Viktorina 30 ta savoldan iborat. Har bir to‘g‘ri javob 2 ball (maksimal 60 ball). Bir xil ball to‘plagan ishtirokchilar sarflangan vaqt bo‘yicha saralanadi."
-        : "Викторина состоит из 30 вопросов. Каждый верный ответ — 2 балла (максимум 60 баллов). При равных баллах учитывается время.";
-      document.getElementById('lblName').textContent = l === 'uz' ? "F.I.Sh. (To‘liq ism va familiya)" : "Ф.И.О. (Полное имя и фамилия)";
-      document.getElementById('lblPhone').textContent = l === 'uz' ? "Telefon raqamingiz" : "Номер телефона";
-      document.getElementById('lblSchool').textContent = l === 'uz' ? "Ta'lim olayotgan maktabingiz (Angren shahri)" : "Ваша школа (г. Ангрен)";
-      document.getElementById('btnStart').textContent = l === 'uz' ? "Viktorinani boshlash 🚀" : "Начать викторину 🚀";
-      document.getElementById('btnDownloadCert').innerHTML = l === 'uz' ? "<span>📥 Sertifikatni yuklab olish (PNG)</span>" : "<span>📥 Скачать сертификат (PNG)</span>";
-      document.getElementById('btnViewLb').textContent = l === 'uz' ? "Umumiy reytingni ko‘rish 📊" : "Посмотреть общий рейтинг 📊";
-
-      document.getElementById('lbSchoolTitle').textContent = l === 'uz' ? "Angren shahri maktablari jamoaviy reytingi" : "Командный рейтинг школ города Ангрена";
-      document.getElementById('lbSchoolSub').textContent = l === 'uz' ? "Maktablar bo‘yicha faollik va ishtirokchilarning o‘rtacha ballari" : "Активность школ и средние баллы участников";
-      document.getElementById('lbStudentTitle').textContent = l === 'uz' ? "Ishtirokchilarning shaxsiy reytingi" : "Личный рейтинг участников";
-
-      renderFacts();
-      if (!document.getElementById('stepPlay').classList.contains('hidden')) {
-        renderQuestion();
-      }
-      if (lastResult) {
-        drawCertificate(lastResult);
-      }
+      const tGroup = document.getElementById('headerTextGroup');
+      tGroup.style.opacity = 0; // Fade out slightly
+      setTimeout(() => {
+        document.getElementById('navTitle').textContent = l === 'uz' ? "Davlat Bayrog‘i Viktorinasi" : "Викторина о Государственном флаге";
+        document.getElementById('navSub').textContent = l === 'uz' ? "Angren shahri yoshlari va maktab o‘quvchilari uchun" : "Для молодёжи и школьников города Ангрена";
+        document.getElementById('tabQuiz').textContent = l === 'uz' ? "Viktorina" : "Викторина";
+        document.getElementById('tabFacts').textContent = l === 'uz' ? "Qiziqarli faktlar" : "Интересные факты";
+        document.getElementById('tabLeaderboard').textContent = l === 'uz' ? "Reyting (60 ball)" : "Рейтинг (60 баллов)";
+        
+        document.getElementById('regTitle').textContent = l === 'uz' ? "Bilimingizni sinab ko‘ring!" : "Проверьте свои знания!";
+        document.getElementById('regDesc').textContent = l === 'uz'
+          ? "Viktorina 30 ta savoldan iborat. Har bir to‘g‘ri javob 2 ball (maksimal 60 ball). Bir xil ball to‘plagan ishtirokchilar sarflangan vaqt bo‘yicha saralanadi."
+          : "Викторина состоит из 30 вопросов. Каждый верный ответ — 2 балла (макс. 60). При равных баллах учитывается время.";
+        
+        document.getElementById('lblName').textContent = l === 'uz' ? "F.I.Sh. (To‘liq ism va familiya)" : "Ф.И.О. (Полное имя)";
+        document.getElementById('lblPhone').textContent = l === 'uz' ? "Telefon raqamingiz" : "Номер телефона";
+        document.getElementById('lblSchool').textContent = l === 'uz' ? "Ta'lim olayotgan maktabingiz (Angren shahri)" : "Ваша школа (г. Ангрен)";
+        document.getElementById('btnStart').textContent = l === 'uz' ? "Viktorinani boshlash 🚀" : "Начать викторину 🚀";
+        
+        document.getElementById('lblDay').textContent = l === 'uz' ? "Kun" : "Дн";
+        document.getElementById('lblHour').textContent = l === 'uz' ? "Soat" : "Час";
+        document.getElementById('lblMin').textContent = l === 'uz' ? "Daq" : "Мин";
+        document.getElementById('lblSec').textContent = l === 'uz' ? "Son" : "Сек";
+        document.getElementById('cdDesc').textContent = l === 'uz' ? "Bayroq qabul qilingan kunga qadar (18-noyabr)" : "До Дня принятия флага (18 ноября)";
+        
+        document.getElementById('lbSchoolTitle').textContent = l === 'uz' ? "Maktablar jamoaviy reytingi" : "Командный рейтинг школ";
+        document.getElementById('lbStudentTitle').textContent = l === 'uz' ? "Ishtirokchilarning shaxsiy reytingi" : "Личный рейтинг участников";
+        document.getElementById('btnDownloadCert').innerHTML = l === 'uz' ? "<span>📥 Sertifikatni yuklab olish</span>" : "<span>📥 Скачать сертификат</span>";
+        document.getElementById('btnViewLb').textContent = l === 'uz' ? "Reytingni ko‘rish 📊" : "Посмотреть рейтинг 📊";
+        
+        renderFacts();
+        if (questions.length > 0 && !document.getElementById('stepPlay').classList.contains('hidden')) renderQuestion();
+        if (lastResult) drawCertificate(lastResult);
+        
+        tGroup.style.opacity = 1; // Fade back in
+      }, 200);
     }
 
     function switchTab(tab) {
+      // 1. Remove active state from all buttons & sections
       ['Quiz', 'Facts', 'Leaderboard', 'Admin'].forEach(t => {
-        document.getElementById('sec' + t).classList.add('hidden');
-        document.getElementById('tab' + t).classList.remove('bg-cyan-500/30', 'border-cyan-400/50');
+        const sec = document.getElementById('sec' + t);
+        const btn = document.getElementById('tab' + t);
+        
+        // CSS display transition class
+        sec.classList.remove('active');
+        
+        // Button colors
+        btn.classList.remove('active');
+        btn.classList.add('text-slate-300');
       });
+      
+      // 2. Add active state to target
       const cap = tab.charAt(0).toUpperCase() + tab.slice(1);
-      document.getElementById('sec' + cap).classList.remove('hidden');
-      document.getElementById('tab' + cap).classList.add('bg-cyan-500/30', 'border-cyan-400/50');
+      const targetSec = document.getElementById('sec' + cap);
+      const targetBtn = document.getElementById('tab' + cap);
+      
+      targetSec.classList.add('active'); // Triggers keyframes animation
+      targetBtn.classList.remove('text-slate-300');
+      targetBtn.classList.add('active');
+      
       if (tab === 'leaderboard') loadLeaderboard();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
+    // --- 3. TAYMER LOGIKASI (Doimiy ishlash uchun) ---
+    function updateCountdown() {
+      const now = new Date();
+      const year = now.getFullYear();
+      let target = new Date(year, 10, 18); // 18 November (Month is 0-indexed: 10 = Nov)
+      
+      if (now > new Date(year, 10, 19)) {
+        target = new Date(year + 1, 10, 18); // Next year if passed
+      }
+      
+      const diff = Math.max(0, Math.floor((target - now) / 1000));
+      
+      document.getElementById('cdDay').textContent = String(Math.floor(diff / 86400)).padStart(2, '0');
+      document.getElementById('cdHour').textContent = String(Math.floor((diff % 86400) / 3600)).padStart(2, '0');
+      document.getElementById('cdMin').textContent = String(Math.floor((diff % 3600) / 60)).padStart(2, '0');
+      document.getElementById('cdSec').textContent = String(diff % 60).padStart(2, '0');
+    }
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+
+    // --- 4. API BOG'LANISH VA VIKTORINA (RUST BACKEND) ---
     async function startQuiz(e) {
       e.preventDefault();
-      const full_name = document.getElementById('inpName').value.trim();
-      const phone = document.getElementById('inpPhone').value.trim();
-      const school = document.getElementById('inpSchool').value;
-      currentStudent = { full_name, phone, school };
+      const btn = document.getElementById('btnStart');
+      btn.innerHTML = `<span class="animate-pulse">Yuklanmoqda...</span>`;
+      btn.disabled = true;
 
-      const [qRes, sRes] = await Promise.all([
-        fetch('/api/questions').then(r => r.json()),
-        fetch('/api/start', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(currentStudent)
-        }).then(r => r.json())
-      ]);
+      try {
+        const full_name = document.getElementById('inpName').value.trim();
+        const phone = document.getElementById('inpPhone').value.trim();
+        const school = document.getElementById('inpSchool').value;
+        currentStudent = { full_name, phone, school };
 
-      questions = qRes.questions;
-      sessionToken = sRes.session_token;
-      currentIdx = 0;
-      userAnswers = [];
+        const [qRes, sRes] = await Promise.all([
+          fetch('/api/questions').then(r => r.json()),
+          fetch('/api/start', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(currentStudent)
+          }).then(r => r.json())
+        ]);
 
-      document.getElementById('stepRegister').classList.add('hidden');
-      document.getElementById('stepPlay').classList.remove('hidden');
+        questions = qRes.questions;
+        sessionToken = sRes.session_token;
+        currentIdx = 0;
+        userAnswers = [];
 
-      timerStart = performance.now();
-      timerInterval = setInterval(() => {
-        const diff = (performance.now() - timerStart) / 1000;
-        const mins = String(Math.floor(diff / 60)).padStart(2, '0');
-        const secs = (diff % 60).toFixed(2).padStart(5, '0');
-        document.getElementById('liveTimer').textContent = `${mins}:${secs}`;
-      }, 40);
+        // Yengil o'tish (fade out/fade in)
+        const sReg = document.getElementById('stepRegister');
+        const sPlay = document.getElementById('stepPlay');
+        sReg.style.opacity = 0;
+        setTimeout(() => {
+          sReg.classList.add('hidden');
+          sPlay.classList.remove('hidden');
+          sPlay.style.opacity = 0;
+          
+          timerStart = performance.now();
+          timerInterval = setInterval(() => {
+            const diff = (performance.now() - timerStart) / 1000;
+            const mins = String(Math.floor(diff / 60)).padStart(2, '0');
+            const secs = (diff % 60).toFixed(2).padStart(5, '0');
+            document.getElementById('liveTimer').textContent = `${mins}:${secs}`;
+          }, 40);
 
-      renderQuestion();
+          renderQuestion();
+          
+          setTimeout(() => { sPlay.style.transition = 'opacity 0.4s'; sPlay.style.opacity = 1; }, 50);
+        }, 300);
+      } catch (err) {
+        alert("Server bilan bog'lanishda xatolik. Qayta urinib ko'ring.");
+        btn.innerHTML = "Viktorinani boshlash 🚀";
+        btn.disabled = false;
+      }
     }
 
     function renderQuestion() {
       const q = questions[currentIdx];
       document.getElementById('qCounter').textContent = `${currentIdx + 1} / ${questions.length}`;
       document.getElementById('progressBar').style.width = `${((currentIdx + 1) / questions.length) * 100}%`;
-      document.getElementById('qText').textContent = lang === 'uz' ? q.q_uz : q.q_ru;
+      
+      const qTitle = document.getElementById('qText');
+      qTitle.style.opacity = 0;
+      setTimeout(() => {
+        qTitle.textContent = lang === 'uz' ? q.q_uz : q.q_ru;
+        qTitle.style.transition = 'opacity 0.3s ease';
+        qTitle.style.opacity = 1;
+      }, 150);
 
       const opts = lang === 'uz' ? q.options_uz : q.options_ru;
-      document.getElementById('optionsContainer').innerHTML = opts.map((opt, idx) => `
-        <button onclick="selectAnswer(${idx})" class="w-full text-left p-4 rounded-2xl glass-card flex items-center gap-3 font-medium">
-          <span class="w-8 h-8 rounded-xl bg-cyan-500/20 border border-cyan-400/40 flex items-center justify-center font-bold text-cyan-300">${String.fromCharCode(65 + idx)}</span>
-          <span>${opt}</span>
-        </button>
-      `).join('');
+      const optsCont = document.getElementById('optionsContainer');
+      optsCont.style.opacity = 0;
+      
+      setTimeout(() => {
+        optsCont.innerHTML = opts.map((opt, idx) => `
+          <button onclick="selectAnswer(${idx})" class="w-full text-left p-4 md:p-5 rounded-2xl glass-card flex items-center gap-4 font-medium hover:bg-white/10 hover:shadow-[0_0_15px_rgba(0,153,181,0.4)] transition-all duration-200">
+            <span class="w-10 h-10 rounded-xl bg-cyan-500/20 border border-cyan-400/40 flex items-center justify-center font-extrabold text-cyan-300 text-lg">${String.fromCharCode(65 + idx)}</span>
+            <span class="text-base">${opt}</span>
+          </button>
+        `).join('');
+        optsCont.style.transition = 'opacity 0.4s ease';
+        optsCont.style.opacity = 1;
+      }, 150);
     }
 
     async function selectAnswer(idx) {
@@ -420,6 +544,11 @@
         renderQuestion();
       } else {
         clearInterval(timerInterval);
+        
+        // Waiting state
+        document.getElementById('qText').innerHTML = `<span class="animate-pulse text-cyan-300">Natijalar serverda hisoblanmoqda... Kuting!</span>`;
+        document.getElementById('optionsContainer').innerHTML = '';
+
         const res = await fetch('/api/submit', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -435,144 +564,92 @@
           certId: 'ANG-' + Math.floor(100000 + Math.random() * 900000)
         };
 
-        document.getElementById('stepPlay').classList.add('hidden');
-        document.getElementById('stepResult').classList.remove('hidden');
-        document.getElementById('resStudent').textContent = `${currentStudent.full_name} • ${currentStudent.school}`;
-        document.getElementById('resScore').textContent = `${res.score} / 60`;
-        document.getElementById('resCorrect').textContent = `${res.correct_count} / 30`;
-        document.getElementById('resTime').textContent = `${(res.time_ms / 1000).toFixed(2)} s`;
-
-        drawCertificate(lastResult);
+        const sPlay = document.getElementById('stepPlay');
+        const sRes = document.getElementById('stepResult');
+        sPlay.style.opacity = 0;
+        setTimeout(() => {
+          sPlay.classList.add('hidden');
+          sRes.classList.remove('hidden');
+          
+          document.getElementById('resStudent').textContent = `${currentStudent.full_name} • ${currentStudent.school}`;
+          document.getElementById('resScore').textContent = `${res.score} / 60`;
+          document.getElementById('resCorrect').textContent = `${res.correct_count} / 30`;
+          document.getElementById('resTime').textContent = `${(res.time_ms / 1000).toFixed(2)} s`;
+          
+          drawCertificate(lastResult);
+        }, 300);
       }
     }
 
+    // --- 5. SERTIFIKAT CHIZISH ---
     function drawStar(ctx, cx, cy, spikes, outerRadius, innerRadius, color) {
-      let rot = Math.PI / 2 * 3;
-      let x = cx;
-      let y = cy;
-      let step = Math.PI / spikes;
-      ctx.beginPath();
-      ctx.moveTo(cx, cy - outerRadius);
+      let rot = Math.PI / 2 * 3; let x = cx; let y = cy; let step = Math.PI / spikes;
+      ctx.beginPath(); ctx.moveTo(cx, cy - outerRadius);
       for (let i = 0; i < spikes; i++) {
-        x = cx + Math.cos(rot) * outerRadius;
-        y = cy + Math.sin(rot) * outerRadius;
-        ctx.lineTo(x, y);
+        x = cx + Math.cos(rot) * outerRadius; y = cy + Math.sin(rot) * outerRadius; ctx.lineTo(x, y);
         rot += step;
-        x = cx + Math.cos(rot) * innerRadius;
-        y = cy + Math.sin(rot) * innerRadius;
-        ctx.lineTo(x, y);
+        x = cx + Math.cos(rot) * innerRadius; y = cy + Math.sin(rot) * innerRadius; ctx.lineTo(x, y);
         rot += step;
       }
-      ctx.lineTo(cx, cy - outerRadius);
-      ctx.closePath();
-      ctx.fillStyle = color;
-      ctx.fill();
+      ctx.lineTo(cx, cy - outerRadius); ctx.closePath(); ctx.fillStyle = color; ctx.fill();
     }
 
     function drawCertificate(data) {
       const canvas = document.getElementById('certCanvas');
       const ctx = canvas.getContext('2d');
-      const W = canvas.width;
-      const H = canvas.height;
+      const W = canvas.width; const H = canvas.height;
 
       const bgGrad = ctx.createLinearGradient(0, 0, W, H);
-      bgGrad.addColorStop(0, '#041022');
-      bgGrad.addColorStop(0.5, '#0a2342');
-      bgGrad.addColorStop(1, '#051929');
-      ctx.fillStyle = bgGrad;
-      ctx.fillRect(0, 0, W, H);
+      bgGrad.addColorStop(0, '#041022'); bgGrad.addColorStop(0.5, '#0a2342'); bgGrad.addColorStop(1, '#051929');
+      ctx.fillStyle = bgGrad; ctx.fillRect(0, 0, W, H);
 
       const rad1 = ctx.createRadialGradient(250, 200, 20, 250, 200, 450);
-      rad1.addColorStop(0, 'rgba(0, 153, 181, 0.22)');
-      rad1.addColorStop(1, 'transparent');
-      ctx.fillStyle = rad1;
-      ctx.fillRect(0, 0, W, H);
+      rad1.addColorStop(0, 'rgba(0, 153, 181, 0.25)'); rad1.addColorStop(1, 'transparent');
+      ctx.fillStyle = rad1; ctx.fillRect(0, 0, W, H);
 
       const rad2 = ctx.createRadialGradient(W - 250, H - 200, 20, W - 250, H - 200, 450);
-      rad2.addColorStop(0, 'rgba(30, 181, 58, 0.18)');
-      rad2.addColorStop(1, 'transparent');
-      ctx.fillStyle = rad2;
-      ctx.fillRect(0, 0, W, H);
+      rad2.addColorStop(0, 'rgba(30, 181, 58, 0.2)'); rad2.addColorStop(1, 'transparent');
+      ctx.fillStyle = rad2; ctx.fillRect(0, 0, W, H);
 
       const drawFlagBar = (yPos, height) => {
-        ctx.fillStyle = '#0099B5';
-        ctx.fillRect(60, yPos, (W - 120) * 0.32, height);
-        ctx.fillStyle = '#CE1126';
-        ctx.fillRect(60 + (W - 120) * 0.32, yPos, (W - 120) * 0.02, height);
-        ctx.fillStyle = '#FFFFFF';
-        ctx.fillRect(60 + (W - 120) * 0.34, yPos, (W - 120) * 0.32, height);
-        ctx.fillStyle = '#CE1126';
-        ctx.fillRect(60 + (W - 120) * 0.66, yPos, (W - 120) * 0.02, height);
-        ctx.fillStyle = '#1EB53A';
-        ctx.fillRect(60 + (W - 120) * 0.68, yPos, (W - 120) * 0.32, height);
+        ctx.fillStyle = '#0099B5'; ctx.fillRect(60, yPos, (W - 120) * 0.32, height);
+        ctx.fillStyle = '#CE1126'; ctx.fillRect(60 + (W - 120) * 0.32, yPos, (W - 120) * 0.02, height);
+        ctx.fillStyle = '#FFFFFF'; ctx.fillRect(60 + (W - 120) * 0.34, yPos, (W - 120) * 0.32, height);
+        ctx.fillStyle = '#CE1126'; ctx.fillRect(60 + (W - 120) * 0.66, yPos, (W - 120) * 0.02, height);
+        ctx.fillStyle = '#1EB53A'; ctx.fillRect(60 + (W - 120) * 0.68, yPos, (W - 120) * 0.32, height);
       };
-      drawFlagBar(55, 12);
-      drawFlagBar(H - 67, 12);
+      drawFlagBar(55, 12); drawFlagBar(H - 67, 12);
 
-      ctx.strokeStyle = '#fbbf24';
-      ctx.lineWidth = 4;
-      ctx.strokeRect(60, 55, W - 120, H - 110);
+      ctx.strokeStyle = '#fbbf24'; ctx.lineWidth = 4; ctx.strokeRect(60, 55, W - 120, H - 110);
+      ctx.strokeStyle = 'rgba(251, 191, 36, 0.35)'; ctx.lineWidth = 1.5; ctx.strokeRect(78, 82, W - 156, H - 164);
 
-      ctx.strokeStyle = 'rgba(251, 191, 36, 0.35)';
-      ctx.lineWidth = 1.5;
-      ctx.strokeRect(78, 82, W - 156, H - 164);
+      ctx.textAlign = 'center'; ctx.fillStyle = '#38bdf8'; ctx.font = 'bold 26px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText(lang === 'uz' ? "ANGREN SHAHAR YOSHLARI VA MAKTAB O‘QUVCHILARI O‘RTASIDA" : "СРЕДИ МОЛОДЁЖИ И ШКОЛЬНИКОВ ГОРОДА АНГРЕНА", W / 2, 155);
 
-      ctx.textAlign = 'center';
-      ctx.fillStyle = '#38bdf8';
-      ctx.font = 'bold 26px "Plus Jakarta Sans", sans-serif';
-      ctx.fillText(
-        lang === 'uz' ? "ANGREN SHAHAR YOSHLARI VA MAKTAB O‘QUVCHILARI O‘RTASIDA" : "СРЕДИ МОЛОДЁЖИ И ШКОЛЬНИКОВ ГОРОДА АНГРЕНА",
-        W / 2, 155
-      );
-
-      ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 30px "Plus Jakarta Sans", sans-serif';
-      ctx.fillText(
-        lang === 'uz' ? "O‘ZBEKISTON RESPUBLIKASI DAVLAT BAYROG‘IGA BAG‘ISHLANGAN VIKTORINA" : "ВИКТОРИНА, ПОСВЯЩЁННАЯ ГОСУДАРСТВЕННОМУ ФЛАГУ РЕСПУБЛИКИ УЗБЕКИСТАН",
-        W / 2, 200
-      );
+      ctx.fillStyle = '#ffffff'; ctx.font = 'bold 30px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText(lang === 'uz' ? "O‘ZBEKISTON RESPUBLIKASI DAVLAT BAYROG‘IGA BAG‘ISHLANGAN VIKTORINA" : "ВИКТОРИНА О ГОСУДАРСТВЕННОМ ФЛАГЕ РЕСПУБЛИКИ УЗБЕКИСТАН", W / 2, 200);
 
       const goldGrad = ctx.createLinearGradient(W / 2 - 300, 260, W / 2 + 300, 330);
-      goldGrad.addColorStop(0, '#fde68a');
-      goldGrad.addColorStop(0.5, '#f59e0b');
-      goldGrad.addColorStop(1, '#fde68a');
-      ctx.fillStyle = goldGrad;
-      ctx.font = '800 86px "Plus Jakarta Sans", sans-serif';
-      ctx.fillText(lang === 'uz' ? "SERTIFIKAT" : "СЕРТИФИКАТ", W / 2, 310);
+      goldGrad.addColorStop(0, '#fde68a'); goldGrad.addColorStop(0.5, '#f59e0b'); goldGrad.addColorStop(1, '#fde68a');
+      ctx.fillStyle = goldGrad; ctx.font = '800 90px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText(lang === 'uz' ? "SERTIFIKAT" : "СЕРТИФИКАТ", W / 2, 315);
 
-      for (let i = 0; i < 12; i++) {
-        const sx = W / 2 - 220 + i * 40;
-        drawStar(ctx, sx, 350, 5, 9, 4, '#fbbf24');
-      }
+      for (let i = 0; i < 12; i++) drawStar(ctx, W / 2 - 220 + i * 40, 360, 5, 9, 4, '#fbbf24');
 
-      ctx.fillStyle = '#94a3b8';
-      ctx.font = '500 26px "Plus Jakarta Sans", sans-serif';
-      ctx.fillText(
-        lang === 'uz' ? "Ushbu sertifikat bilan quyidagi ishtirokchi taqdirlanadi:" : "Настоящий сертификат вручается участнику:",
-        W / 2, 415
-      );
+      ctx.fillStyle = '#94a3b8'; ctx.font = '500 26px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText(lang === 'uz' ? "Ushbu sertifikat bilan quyidagi ishtirokchi taqdirlanadi:" : "Настоящий сертификат вручается участнику:", W / 2, 430);
 
-      ctx.fillStyle = '#ffffff';
-      ctx.font = '800 58px "Plus Jakarta Sans", sans-serif';
-      ctx.fillText(data.full_name.toUpperCase(), W / 2, 495);
+      ctx.fillStyle = '#ffffff'; ctx.font = '800 62px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText(data.full_name.toUpperCase(), W / 2, 515);
 
-      ctx.strokeStyle = 'rgba(251, 191, 36, 0.6)';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(W / 2 - 380, 520);
-      ctx.lineTo(W / 2 + 380, 520);
-      ctx.stroke();
+      ctx.strokeStyle = 'rgba(251, 191, 36, 0.6)'; ctx.lineWidth = 2; ctx.beginPath();
+      ctx.moveTo(W / 2 - 400, 540); ctx.lineTo(W / 2 + 400, 540); ctx.stroke();
 
-      ctx.fillStyle = '#38bdf8';
-      ctx.font = '700 34px "Plus Jakarta Sans", sans-serif';
-      ctx.fillText(`Angren shahri, ${data.school}`, W / 2, 575);
+      ctx.fillStyle = '#38bdf8'; ctx.font = '700 34px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText(`Angren shahri, ${data.school}`, W / 2, 595);
 
-      const boxY = 635;
-      const boxW = 340;
-      const boxH = 155;
-      const gap = 45;
+      const boxY = 660, boxW = 340, boxH = 155, gap = 45;
       const startX = (W - (boxW * 3 + gap * 2)) / 2;
-
       const metrics = [
         { label: lang === 'uz' ? "TO‘PLANGAN BALL" : "НАБРАННЫЙ БАЛЛ", val: `${data.score} / 60`, color: '#34d399' },
         { label: lang === 'uz' ? "TO‘G‘RI JAVOBLAR" : "ВЕРНЫЕ ОТВЕТЫ", val: `${data.correct_count} / 30`, color: '#38bdf8' },
@@ -581,116 +658,73 @@
 
       metrics.forEach((m, i) => {
         const bx = startX + i * (boxW + gap);
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.06)';
-        ctx.beginPath();
-        ctx.roundRect(bx, boxY, boxW, boxH, 22);
-        ctx.fill();
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
-        ctx.lineWidth = 2;
-        ctx.stroke();
-
-        ctx.fillStyle = '#cbd5e1';
-        ctx.font = '700 20px "Plus Jakarta Sans", sans-serif';
-        ctx.fillText(m.label, bx + boxW / 2, boxY + 50);
-
-        ctx.fillStyle = m.color;
-        ctx.font = '800 48px "Plus Jakarta Sans", sans-serif';
-        ctx.fillText(m.val, bx + boxW / 2, boxY + 118);
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.05)'; ctx.beginPath(); ctx.roundRect(bx, boxY, boxW, boxH, 22); ctx.fill();
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)'; ctx.lineWidth = 2; ctx.stroke();
+        ctx.fillStyle = '#cbd5e1'; ctx.font = '700 20px "Plus Jakarta Sans", sans-serif'; ctx.fillText(m.label, bx + boxW / 2, boxY + 50);
+        ctx.fillStyle = m.color; ctx.font = '800 48px "Plus Jakarta Sans", sans-serif'; ctx.fillText(m.val, bx + boxW / 2, boxY + 118);
       });
 
-      ctx.fillStyle = '#e2e8f0';
-      ctx.font = '500 25px "Plus Jakarta Sans", sans-serif';
-      ctx.fillText(
-        lang === 'uz' ? "«18-noyabr — O‘zbekiston Respublikasi Davlat bayrog‘i qabul qilingan kun» munosabati bilan" : "За активное участие и высокие знания в городской онлайн-викторине ко Дню принятия",
-        W / 2, 855
-      );
-      ctx.fillText(
-        lang === 'uz' ? "o‘tkazilgan Angren shahar intellektual onlayn viktorinasida faol ishtirok etgani uchun berildi." : "Государственного флага Республики Узбекистан (18 ноября).",
-        W / 2, 892
-      );
+      ctx.fillStyle = '#e2e8f0'; ctx.font = '500 25px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText(lang === 'uz' ? "«18-noyabr — Davlat bayrog‘i qabul qilingan kun» munosabati bilan" : "За активное участие и отличные знания в городской онлайн-викторине", W / 2, 875);
+      ctx.fillText(lang === 'uz' ? "o‘tkazilgan shahar intellektual viktorinasida faol ishtirok etgani uchun berildi." : "ко Дню принятия Государственного флага (18 ноября).", W / 2, 915);
 
       const today = new Date().toLocaleDateString('ru-RU');
-      ctx.textAlign = 'left';
-      ctx.fillStyle = '#94a3b8';
-      ctx.font = '600 22px "Plus Jakarta Sans", sans-serif';
-      ctx.fillText(lang === 'uz' ? `Sana: ${today}-yil` : `Дата: ${today} г.`, 130, 995);
-      ctx.fillText(`ID: ${data.certId}`, 130, 1028);
+      ctx.textAlign = 'left'; ctx.fillStyle = '#94a3b8'; ctx.font = '600 22px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText(lang === 'uz' ? `Sana: ${today}-yil` : `Дата: ${today} г.`, 130, 995); ctx.fillText(`ID: ${data.certId}`, 130, 1028);
 
-      ctx.textAlign = 'center';
-      ctx.beginPath();
-      ctx.arc(W / 2, 985, 48, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(251, 191, 36, 0.15)';
-      ctx.fill();
-      ctx.strokeStyle = '#fbbf24';
-      ctx.lineWidth = 3;
-      ctx.stroke();
-      ctx.fillStyle = '#fbbf24';
-      ctx.font = '800 20px "Plus Jakarta Sans", sans-serif';
-      ctx.fillText("ANGREN", W / 2, 982);
-      ctx.font = '700 16px "Plus Jakarta Sans", sans-serif';
-      ctx.fillText("2026", W / 2, 1004);
+      ctx.textAlign = 'center'; ctx.beginPath(); ctx.arc(W / 2, 985, 52, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(251, 191, 36, 0.1)'; ctx.fill(); ctx.strokeStyle = '#fbbf24'; ctx.lineWidth = 3; ctx.stroke();
+      ctx.fillStyle = '#fbbf24'; ctx.font = '800 22px "Plus Jakarta Sans", sans-serif'; ctx.fillText("ANGREN", W / 2, 982);
+      ctx.font = '700 18px "Plus Jakarta Sans", sans-serif'; ctx.fillText("2026", W / 2, 1006);
 
-      ctx.textAlign = 'right';
-      ctx.fillStyle = '#94a3b8';
-      ctx.font = '600 22px "Plus Jakarta Sans", sans-serif';
-      ctx.fillText(lang === 'uz' ? "Tashkiliy qo‘mita" : "Оргкомитет викторины", W - 130, 995);
-      ctx.fillStyle = '#38bdf8';
-      ctx.fillText("Angren shahri • 2026", W - 130, 1028);
+      ctx.textAlign = 'right'; ctx.fillStyle = '#94a3b8'; ctx.font = '600 22px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText(lang === 'uz' ? "Tashkiliy qo‘mita" : "Оргкомитет", W - 130, 995); ctx.fillStyle = '#38bdf8'; ctx.fillText("Angren shahri • 2026", W - 130, 1028);
     }
 
     function downloadCertificate() {
       if (!lastResult) return;
       const canvas = document.getElementById('certCanvas');
       const link = document.createElement('a');
-      const safeName = lastResult.full_name.replace(/[^a-zA-Z0-9А-Яа-яЎўҚқҒғҲҳ\s]/g, '').trim().replace(/\s+/g, '_');
-      link.download = `Sertifikat_${safeName}_${lastResult.score}ball.png`;
+      link.download = `Sertifikat_${lastResult.full_name.replace(/\s+/g, '_')}.png`;
       link.href = canvas.toDataURL('image/png', 1.0);
       link.click();
     }
 
+    // --- 6. JADVAL VA ADMIN LOGIKASI (RUST ORQALI) ---
     async function loadLeaderboard() {
       const data = await fetch('/api/leaderboard').then(r => r.json());
       const students = data.leaderboard || [];
 
-      // 1. Shaxsiy reyting jadvalini to'ldirish
-      const tbody = document.getElementById('lbBody');
-      tbody.innerHTML = students.map(item => `
-        <tr class="hover:bg-white/5">
-          <td class="py-3 px-3 font-bold">${item.rank === 1 ? '🥇 1' : item.rank === 2 ? '🥈 2' : item.rank === 3 ? '🥉 3' : item.rank}</td>
-          <td class="py-3 px-3 font-semibold">${item.full_name}</td>
-          <td class="py-3 px-3 text-slate-300">${item.school}</td>
-          <td class="py-3 px-3 font-extrabold text-emerald-400">${item.score} ball</td>
-          <td class="py-3 px-3 font-mono text-cyan-300">${(item.time_ms / 1000).toFixed(2)} s</td>
+      document.getElementById('lbBody').innerHTML = students.map(item => `
+        <tr class="hover:bg-white/5 transition-colors duration-200">
+          <td class="py-4 px-4 font-bold text-lg">${item.rank === 1 ? '🥇 1' : item.rank === 2 ? '🥈 2' : item.rank === 3 ? '🥉 3' : item.rank}</td>
+          <td class="py-4 px-4 font-semibold text-white">${item.full_name}</td>
+          <td class="py-4 px-4 text-slate-300">${item.school}</td>
+          <td class="py-4 px-4 font-extrabold text-emerald-400 text-lg">${item.score}</td>
+          <td class="py-4 px-4 font-mono text-cyan-300">${(item.time_ms / 1000).toFixed(2)} s</td>
         </tr>
       `).join('');
 
-      // 2. Maktablararo jamoaviy reytingni hisoblash va chiqarish
       const schoolMap = {};
       students.forEach(s => {
-        if (!schoolMap[s.school]) {
-          schoolMap[s.school] = { count: 0, totalScore: 0 };
-        }
+        if (!schoolMap[s.school]) schoolMap[s.school] = { count: 0, totalScore: 0 };
         schoolMap[s.school].count += 1;
         schoolMap[s.school].totalScore += s.score;
       });
 
       const schoolArr = Object.keys(schoolMap).map(school => {
-        const item = schoolMap[school];
-        const avg = item.totalScore / item.count;
-        return { school, count: item.count, totalScore: item.totalScore, avg: avg.toFixed(1) };
+        const avg = schoolMap[school].totalScore / schoolMap[school].count;
+        return { school, count: schoolMap[school].count, totalScore: schoolMap[school].totalScore, avg: avg.toFixed(1) };
       });
-
-      // O'rtacha ball va jami ishtirokchilar soni bo'yicha saralash
       schoolArr.sort((a, b) => b.avg - a.avg || b.totalScore - a.totalScore);
 
-      const schoolTbody = document.getElementById('schoolLbBody');
-      schoolTbody.innerHTML = schoolArr.map((sch, idx) => `
-        <tr class="hover:bg-white/5">
-          <td class="py-3 px-3 font-bold">${idx === 0 ? '🏆 1' : idx === 1 ? '🥈 2' : idx === 2 ? '🥉 3' : idx + 1}</td>
-          <td class="py-3 px-3 font-semibold text-cyan-300">${sch.school}</td>
-          <td class="py-3 px-3">${sch.count} ta o‘quvchi</td>
-          <td class="py-3 px-3 font-bold text-emerald-400">${sch.totalScore} ball</td>
-          <td class="py-3 px-3 font-extrabold text-amber-300">${sch.avg} ball</td>
+      document.getElementById('schoolLbBody').innerHTML = schoolArr.map((sch, idx) => `
+        <tr class="hover:bg-white/5 transition-colors duration-200">
+          <td class="py-4 px-4 font-bold text-lg">${idx === 0 ? '🏆 1' : idx === 1 ? '🥈 2' : idx === 2 ? '🥉 3' : idx + 1}</td>
+          <td class="py-4 px-4 font-bold text-cyan-200">${sch.school}</td>
+          <td class="py-4 px-4 text-slate-200">${sch.count} ta o‘quvchi</td>
+          <td class="py-4 px-4 font-bold text-emerald-400">${sch.totalScore}</td>
+          <td class="py-4 px-4 font-extrabold text-amber-300 text-lg">${sch.avg}</td>
         </tr>
       `).join('');
     }
@@ -701,13 +735,13 @@
       adminCache = data.leaderboard || [];
       document.getElementById('adminBody').innerHTML = adminCache.map(item => `
         <tr class="hover:bg-white/5">
-          <td class="py-3 px-3 font-bold">${item.rank}</td>
-          <td class="py-3 px-3 font-semibold">${item.full_name}</td>
-          <td class="py-3 px-3 font-mono text-amber-300">${item.phone}</td>
-          <td class="py-3 px-3">${item.school}</td>
-          <td class="py-3 px-3 font-bold text-emerald-400">${item.score}</td>
-          <td class="py-3 px-3">${item.correct_count}/30</td>
-          <td class="py-3 px-3 font-mono">${(item.time_ms / 1000).toFixed(2)} s</td>
+          <td class="py-3 px-4 font-bold">${item.rank}</td>
+          <td class="py-3 px-4 font-semibold text-white">${item.full_name}</td>
+          <td class="py-3 px-4 font-mono text-amber-300">${item.phone}</td>
+          <td class="py-3 px-4 text-slate-300">${item.school}</td>
+          <td class="py-3 px-4 font-bold text-emerald-400">${item.score}</td>
+          <td class="py-3 px-4">${item.correct_count}/30</td>
+          <td class="py-3 px-4 font-mono text-cyan-300">${(item.time_ms / 1000).toFixed(2)} s</td>
         </tr>
       `).join('');
     }
@@ -715,18 +749,79 @@
     function exportCSV() {
       if (!adminCache.length) return alert("Avval natijalarni oching!");
       const rows = [
-        ["O'rin", "F.I.Sh.", "Telefon", "Maktab", "Ball (60)", "To'g'ri javob (30)", "Vaqt (soniya)"],
+        ["O'rin", "F.I.Sh.", "Telefon", "Maktab", "Ball (60)", "To'g'ri javob", "Vaqt (soniya)"],
         ...adminCache.map(r => [r.rank, `"${r.full_name}"`, `"${r.phone}"`, `"${r.school}"`, r.score, r.correct_count, (r.time_ms / 1000).toFixed(2)])
       ];
       const csv = "\uFEFF" + rows.map(e => e.join(",")).join("\n");
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = url;
-      a.download = "angren_bayroq_viktorina_natijalari.csv";
-      a.click();
+      a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
+      a.download = "angren_bayroq_viktorina_natijalari.csv"; a.click();
     }
 
+    // --- 7. JONLI ORQA FON (CANVAS FLAG ANIMATION) ---
+    const cv = document.getElementById('flag-canvas');
+    const cx = cv.getContext('2d');
+    const fo = document.createElement('canvas'); 
+    fo.width = 800; fo.height = 400;
+    
+    (function drawStaticFlagToBuffer() {
+      const f = fo.getContext('2d');
+      const R = (c, y, h) => { f.fillStyle = c; f.fillRect(0, y, 800, h) };
+      // O'zbekiston bayrog'i proporsiyalari
+      R('#0099b5', 0, 128); R('#ce1126', 128, 8); R('#fff', 136, 128); R('#ce1126', 264, 8); R('#1eb53a', 272, 128);
+      // Oy
+      f.fillStyle = '#fff'; f.beginPath(); f.arc(110, 64, 40, 0, 7); f.fill();
+      f.fillStyle = '#0099b5'; f.beginPath(); f.arc(124, 64, 34, 0, 7); f.fill();
+      // Yulduzlar (xomaki generatsiya orqa fon uchun)
+      f.fillStyle = '#fff';
+      [3, 4, 5].forEach((n, r) => {
+        for (let i = 0; i < n; i++) {
+          const X = 250 + (i - (n - 1) / 2) * 34; const Y = 30 + r * 34;
+          f.beginPath();
+          for (let k = 0; k < 10; k++) {
+            const a = -Math.PI / 2 + k * Math.PI / 5; const d = k % 2 ? 5 : 12;
+            f.lineTo(X + Math.cos(a) * d, Y + Math.sin(a) * d);
+          }
+          f.closePath(); f.fill();
+        }
+      });
+    })();
+
+    function resizeCanvas() {
+      const d = Math.min(window.devicePixelRatio || 1, 2);
+      cv.width = window.innerWidth * d; cv.height = window.innerHeight * d;
+      cx.setTransform(d, 0, 0, d, 0, 0);
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    function animateFlag(ms) {
+      const W = window.innerWidth, H = window.innerHeight;
+      let fw = W * 1.15, fh = fw / 2;
+      if (fh < H * 1.1) { fh = H * 1.1; fw = fh * 2; }
+      const x0 = (W - fw) / 2, y0 = (H - fh) / 2;
+      const N = Math.ceil(fw / 5), sw = fw / N;
+      const t = ms / 1200; // Paskal tezligi (Sekin, silliq)
+      const amp = fh * 0.04; 
+
+      cx.clearRect(0, 0, W, H);
+      for (let i = 0; i < N; i++) {
+        const p = i / N;
+        const ph = p * 8 - t; // To'lqin chastotasi
+        const y = Math.sin(ph) * amp * (0.3 + p) + Math.sin(ph * 0.5 + t * 0.4) * amp * 0.3;
+        const sh = Math.cos(ph);
+        
+        cx.drawImage(fo, p * 800, 0, 800 / N + 1, 400, x0 + i * sw, y0 + y, sw + 1, fh);
+        
+        // Soya va yorug'lik effektlari (plavnost uchun)
+        cx.fillStyle = sh > 0 ? `rgba(255, 255, 255, ${sh * 0.12})` : `rgba(0, 0, 15, ${-sh * 0.25})`;
+        cx.fillRect(x0 + i * sw, y0 + y, sw + 1, fh);
+      }
+      requestAnimationFrame(animateFlag);
+    }
+    requestAnimationFrame(animateFlag);
+
+    // Boshlang'ich funksiyalar
     initSchools();
     renderFacts();
   </script>
