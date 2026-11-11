@@ -1,16 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "functions": {
-    "api/questions/main.rs": { "runtime": "vercel-rust@4.0.6" },
-    "api/start/main.rs": { "runtime": "vercel-rust@4.0.6" },
-    "api/submit/main.rs": { "runtime": "vercel-rust@4.0.6" },
-    "api/leaderboard/main.rs": { "runtime": "vercel-rust@4.0.6" }
-  },
   "rewrites": [
-    { "source": "/api/questions", "destination": "/api/questions/main.rs" },
-    { "source": "/api/start", "destination": "/api/start/main.rs" },
-    { "source": "/api/submit", "destination": "/api/submit/main.rs" },
-    { "source": "/api/leaderboard", "destination": "/api/leaderboard/main.rs" },
-    { "source": "/(.*)", "destination": "/public/index.html" }
+    { "source": "/", "destination": "/public/index.html" }
   ]
 }
