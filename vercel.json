@@ -1,7 +1,22 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "functions": {
-    "api/**/*.rs": {
+    "api/questions.rs": {
+      "runtime": "vercel-rust@4.0.6",
+      "memory": 1024,
+      "maxDuration": 10
+    },
+    "api/start.rs": {
+      "runtime": "vercel-rust@4.0.6",
+      "memory": 1024,
+      "maxDuration": 10
+    },
+    "api/submit.rs": {
+      "runtime": "vercel-rust@4.0.6",
+      "memory": 1024,
+      "maxDuration": 10
+    },
+    "api/leaderboard.rs": {
       "runtime": "vercel-rust@4.0.6",
       "memory": 1024,
       "maxDuration": 10
