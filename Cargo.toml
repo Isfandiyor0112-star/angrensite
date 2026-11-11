@@ -1,36 +1,8 @@
-[package]
-name = "angren-bayroq-viktorina"
-version = "1.0.0"
-edition = "2021"
-
-[lib]
-name = "angren_bayroq"
-path = "src/lib.rs"
-
-[[bin]]
-name = "questions"
-path = "api/questions.rs"
-
-[[bin]]
-name = "start"
-path = "api/start.rs"
-
-[[bin]]
-name = "submit"
-path = "api/submit.rs"
-
-[[bin]]
-name = "leaderboard"
-path = "api/leaderboard.rs"
-
-[dependencies]
-vercel_runtime = "1.1.2"
-tokio = { version = "1.38", features = ["macros", "rt-multi-thread"] }
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
-mongodb = "3.1.0"
-futures = "0.3"
-hmac = "0.12"
-sha2 = "0.10"
-hex = "0.4"
-chrono = { version = "0.4", features = ["serde"] }
+[workspace]
+members = [
+    "api/questions",
+    "api/start",
+    "api/submit",
+    "api/leaderboard",
+]
+resolver = "2"
