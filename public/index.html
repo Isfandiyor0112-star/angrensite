@@ -103,7 +103,6 @@
             100% { transform: translate(-30px, 30px) scale(0.95); }
         }
 
-        /* Плавные анимации переходов между вкладками и блоками */
         @keyframes slideUpFade {
             0% {
                 opacity: 0;
@@ -296,7 +295,7 @@
                         </h1>
 
                         <p class="text-slate-300 text-sm sm:text-base leading-relaxed mb-6" data-i18n="heroDesc">
-                            Davlat ramzimiz qabul qilingan kunga bag‘ishlangan intellektual bellashuv. 30 ta savolga to‘g‘ri javob bering, maksimal 60 ball to‘plang va maktabingiz reytingini yuqoriga olib chiqing!
+                            Davlat ramzimiz qabul qilingan kunga bag‘ishlangan intellektual bellashuv. 30 ta savolga to‘g‘ri javob bering, maksimal 60 ball to‘plang, maxsus sertifikatga ega bo‘ling va maktabingiz reytingini yuqoriga olib chiqing!
                         </p>
 
                         <!-- Countdown Timer to 18 November -->
@@ -336,8 +335,8 @@
                                 <div class="text-[11px] sm:text-xs text-slate-300 mt-0.5" data-i18n="statMaxScore">Har savol = 2 ball</div>
                             </div>
                             <div class="p-3.5 rounded-2xl bg-white/5 border border-white/10 text-center">
-                                <div class="text-xl sm:text-2xl font-extrabold text-amber-400 font-mono">00:00.00</div>
-                                <div class="text-[11px] sm:text-xs text-slate-300 mt-0.5" data-i18n="statTimeTie">Vaqt bo‘yicha saralash</div>
+                                <div class="text-xl sm:text-2xl font-extrabold text-amber-400 font-mono">SERTIFIKAT</div>
+                                <div class="text-[11px] sm:text-xs text-slate-300 mt-0.5" data-i18n="statTimeTie">Har bir ishtirokchiga</div>
                             </div>
                         </div>
                     </div>
@@ -362,7 +361,7 @@
                                     F.I.Sh. (To‘liq ism va familiya) *
                                 </label>
                                 <input type="text" id="input-name" required
-                                    placeholder="Masalan: Aliyev Sardorbek"
+                                    placeholder="Masalan: Imomaliyev Isfandiyor"
                                     data-i18n-placeholder="phName"
                                     class="glass-input w-full px-4 py-3 rounded-xl text-sm">
                             </div>
@@ -379,6 +378,16 @@
                             </div>
 
                             <div>
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5" data-i18n="labelMahalla">
+                                    Yashash mahallangiz (MFY) *
+                                </label>
+                                <input type="text" id="input-mahalla" required
+                                    placeholder="Masalan: Istiqlol MFY"
+                                    data-i18n-placeholder="phMahalla"
+                                    class="glass-input w-full px-4 py-3 rounded-xl text-sm">
+                            </div>
+
+                            <div>
                                 <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5" data-i18n="labelSchool">
                                     Angren shahridagi maktabingiz *
                                 </label>
@@ -388,7 +397,7 @@
                             </div>
 
                             <div class="p-3.5 rounded-2xl bg-sky-500/10 border border-sky-400/25 text-xs text-sky-200 leading-relaxed" data-i18n="tieBreakerNotice">
-                                <strong>Muhim qoida:</strong> Har bir to‘g‘ri javob <strong>2 ball</strong> beradi (Maksimal <strong>60 ball</strong>). Bir xil ball to‘plagan ishtirokchilar sarflangan vaqt bo‘yicha saralanadi.
+                                <strong>Muhim qoida:</strong> Har bir to‘g‘ri javob <strong>2 ball</strong> beradi (Maksimal <strong>60 ball</strong>). Yakunda maxsus elektron sertifikat taqdim etiladi.
                             </div>
 
                             <button type="submit" id="btn-start-submit" class="w-full py-4 px-6 rounded-2xl font-bold text-base text-white bg-gradient-to-r from-uzblue via-sky-500 to-uzgreen hover:brightness-110 hover:-translate-y-0.5 active:scale-[0.99] transition-all duration-300 shadow-xl shadow-uzblue/30 flex items-center justify-center gap-2 disabled:opacity-50 disabled:pointer-events-none">
@@ -457,12 +466,12 @@
                 </div>
             </div>
 
-            <!-- Result View -->
-            <div id="view-result" class="hidden smooth-section max-w-3xl mx-auto space-y-6">
+            <!-- Result View with Certificate -->
+            <div id="view-result" class="hidden smooth-section max-w-4xl mx-auto space-y-6">
                 <div class="liquid-glass rounded-3xl p-6 sm:p-10 text-center relative border-t-2 border-t-emerald-400">
                     <div class="text-5xl mb-3 animate-bounce">🏆</div>
                     <h2 class="text-2xl sm:text-4xl font-extrabold text-white mb-2" id="result-student-name">Ishtirokchi</h2>
-                    <p class="text-sm text-slate-300 mb-6" id="result-student-school">Angren shahri maktabi</p>
+                    <p class="text-sm text-sky-300 font-medium mb-6" id="result-student-school">Angren shahri maktabi</p>
 
                     <div class="grid grid-cols-3 gap-3 mb-8">
                         <div class="p-4 rounded-2xl bg-slate-900/75 border border-sky-500/30">
@@ -479,7 +488,21 @@
                         </div>
                     </div>
 
+                    <!-- Certificate Canvas Preview -->
+                    <div class="mb-8">
+                        <p class="text-xs uppercase tracking-widest text-amber-300 font-bold mb-3" data-i18n="certReadyLabel">
+                            ✨ Maxsus elektron sertifikatingiz tayyor ✨
+                        </p>
+                        <div class="rounded-2xl overflow-hidden border border-white/20 shadow-2xl bg-slate-950/70 p-2">
+                            <canvas id="certCanvas" width="1600" height="1130" class="w-full h-auto rounded-xl"></canvas>
+                        </div>
+                    </div>
+
                     <div class="flex flex-wrap items-center justify-center gap-3">
+                        <button onclick="downloadCertificate()" class="px-6 py-3.5 rounded-2xl font-extrabold text-sm bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-slate-950 shadow-xl flex items-center gap-2 hover:-translate-y-0.5 transition-all">
+                            <i class="ph-bold ph-download-simple text-lg"></i>
+                            <span data-i18n="btnDownloadCert">Sertifikatni yuklab olish (PNG)</span>
+                        </button>
                         <button onclick="switchSection('leaderboard')" class="px-6 py-3.5 rounded-2xl font-bold text-sm bg-gradient-to-r from-uzblue to-uzgreen text-white shadow-lg flex items-center gap-2 hover:brightness-110 transition-all">
                             <i class="ph-bold ph-trophy text-lg"></i>
                             <span data-i18n="btnViewLeaderboard">Umumiy Reytingni Ko‘rish</span>
@@ -526,7 +549,7 @@
                     </div>
                 </div>
 
-                <!-- Students Table -->
+                <!-- Students Table (Mahalla is NOT shown publicly) -->
                 <div id="lb-students-table-wrap" class="smooth-section overflow-x-auto rounded-2xl border border-white/10 bg-slate-950/50">
                     <table class="w-full text-left border-collapse">
                         <thead>
@@ -581,7 +604,7 @@
                     <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
                         <div>
                             <h2 class="text-xl font-bold text-white" data-i18n="adminTableTitle">Ishtirokchilarning To‘liq Natijalari</h2>
-                            <p class="text-xs text-slate-400 mt-0.5" data-i18n="adminTableSub">Barcha telefon raqamlar ochiq va keraksiz testlarni o‘chirish mumkin</p>
+                            <p class="text-xs text-slate-400 mt-0.5" data-i18n="adminTableSub">Telefon raqamlar, mahalla (MFY) va natijalarni boshqarish</p>
                         </div>
                         <div class="flex items-center gap-2">
                             <button onclick="refreshAdminData()" class="px-4 py-2 rounded-xl text-xs font-bold bg-white/10 hover:bg-white/20 text-white flex items-center gap-1.5 transition-all">
@@ -599,6 +622,7 @@
                                     <th class="py-3 px-3">#</th>
                                     <th class="py-3 px-3" data-i18n="thStudent">F.I.Sh.</th>
                                     <th class="py-3 px-3" data-i18n="thPhone">Telefon</th>
+                                    <th class="py-3 px-3" data-i18n="thMahalla">Mahalla</th>
                                     <th class="py-3 px-3" data-i18n="thSchool">Maktab</th>
                                     <th class="py-3 px-3 text-center" data-i18n="thScore">Ball</th>
                                     <th class="py-3 px-3 text-center" data-i18n="thTime">Vaqt</th>
@@ -627,6 +651,7 @@
         let timerInterval = null;
         let quizStartTime = 0;
         let activeParticipant = null;
+        let lastCertificateData = null;
         let sessionToken = '';
         let isStartingQuiz = false;
         let isSubmittingQuiz = false;
@@ -653,24 +678,28 @@
                 heroBadge: "Angren shahar maktablararo viktorinasi",
                 heroTitle1: "O‘zbekiston Davlat Bayrog‘i:",
                 heroTitle2: "G‘urur va Bilim Sinovi",
-                heroDesc: "Davlat ramzimiz qabul qilingan kunga bag‘ishlangan intellektual bellashuv. 30 ta savolga to‘g‘ri javob bering, maksimal 60 ball to‘plang va maktabingiz reytingini yuqoriga olib chiqing!",
+                heroDesc: "Davlat ramzimiz qabul qilingan kunga bag‘ishlangan intellektual bellashuv. 30 ta savolga to‘g‘ri javob bering, maksimal 60 ball to‘plang, maxsus sertifikatga ega bo‘ling va maktabingiz reytingini yuqoriga olib chiqing!",
                 timerTitle: "Bayroq kunigacha qolgan vaqt (18-noyabr)",
                 tDays: "Kun", tHours: "Soat", tMins: "Daqiqa", tSecs: "Soniya",
-                statQuestions: "Savollar soni", statMaxScore: "Har savol = 2 ball", statTimeTie: "Vaqt bo‘yicha saralash",
+                statQuestions: "Savollar soni", statMaxScore: "Har savol = 2 ball", statTimeTie: "Har bir ishtirokchiga",
                 regHeader: "Ishtirokchi ro‘yxati", regSub: "Ma'lumotlaringizni to‘liq kiriting",
-                labelName: "F.I.Sh. (To‘liq ism va familiya) *", phName: "Masalan: Aliyev Sardorbek",
-                labelPhone: "Telefon raqamingiz *", labelSchool: "Angren shahridagi maktabingiz *",
-                tieBreakerNotice: "<strong>Muhim qoida:</strong> Har bir to‘g‘ri javob <strong>2 ball</strong> beradi (Maksimal <strong>60 ball</strong>). Bir xil ball to‘plagan ishtirokchilar sarflangan vaqt bo‘yicha saralanadi.",
+                labelName: "F.I.Sh. (To‘liq ism va familiya) *", phName: "Masalan: Imomaliyev Isfandiyor",
+                labelPhone: "Telefon raqamingiz *",
+                labelMahalla: "Yashash mahallangiz (MFY) *", phMahalla: "Masalan: Istiqlol MFY",
+                labelSchool: "Angren shahridagi maktabingiz *",
+                tieBreakerNotice: "<strong>Muhim qoida:</strong> Har bir to‘g‘ri javob <strong>2 ball</strong> beradi (Maksimal <strong>60 ball</strong>). Yakunda maxsus elektron sertifikat taqdim etiladi.",
                 btnStartQuiz: "Viktorinani Boshlash", ptsPerQ: "ball", btnPrev: "Oldingi", btnNext: "Keyingi savol", btnFinish: "Yakunlash",
                 resScoreLabel: "Jami Ball", resCorrectLabel: "To‘g‘ri javob", resTimeLabel: "Vaqt",
+                certReadyLabel: "✨ Maxsus elektron sertifikatingiz tayyor ✨",
+                btnDownloadCert: "Sertifikatni yuklab olish (PNG)",
                 btnViewLeaderboard: "Umumiy Reytingni Ko‘rish", btnRetake: "Qayta topshirish",
                 factsTitle: "O‘zbekiston Davlat Bayrog‘i Haqida Qiziqarli Faktlar", factsSub: "Tarixiy, astronomik va me'moriy ma'lumotlar.",
                 lbTitle: "Eng Yuqori Natijalar Jadvali (Maksimal 60 ball)", lbSubtitle: "Saralash tartibi: 1) Ball (60) • 2) Eng qisqa vaqt",
                 lbTabStudents: "O‘quvchilar", lbTabSchools: "Maktablar",
-                thRank: "#", thStudent: "F.I.Sh.", thSchool: "Maktab", thScore: "Ball (60)", thTime: "Vaqt", thPhone: "Telefon", thAction: "O‘chirish", thCount: "Ishtirokchilar", thAvg: "O‘rtacha ball",
+                thRank: "#", thStudent: "F.I.Sh.", thSchool: "Maktab", thMahalla: "Mahalla", thScore: "Ball (60)", thTime: "Vaqt", thPhone: "Telefon", thAction: "O‘chirish", thCount: "Ishtirokchilar", thAvg: "O‘rtacha ball",
                 adminLoginTitle: "Admin Panel", adminLoginSub: "Boshqaruv paneliga kirish uchun maxfiy parolni kiriting",
                 phAdminPass: "Parolni kiriting...", btnAdminEnter: "Kirish",
-                adminTableTitle: "Ishtirokchilarning To‘liq Natijalari", adminTableSub: "Barcha telefon raqamlar ochiq va test natijalarini o‘chirish mumkin",
+                adminTableTitle: "Ishtirokchilarning To‘liq Natijalari", adminTableSub: "Telefon raqamlar, mahalla (MFY) va natijalarni boshqarish",
                 btnRefresh: "Yangilash", selectSchool: "— Maktabingizni tanlang —"
             },
             ru: {
@@ -683,24 +712,28 @@
                 heroBadge: "Межшкольная викторина города Ангрена",
                 heroTitle1: "Государственный Флаг Узбекистана:",
                 heroTitle2: "Гордость и Проверка Знаний",
-                heroDesc: "Интеллектуальное соревнование ко Дню флага. Ответьте на 30 вопросов, наберите до 60 баллов и выведите свою школу в лидеры!",
+                heroDesc: "Интеллектуальное соревнование ко Дню флага. Ответьте на 30 вопросов, наберите до 60 баллов, получите именной сертификат и выведите свою школу в лидеры!",
                 timerTitle: "До Дня флага осталось (18 ноября)",
                 tDays: "Дней", tHours: "Часов", tMins: "Минут", tSecs: "Секунд",
-                statQuestions: "Вопросов", statMaxScore: "Ответ = 2 балла", statTimeTie: "Сортировка по времени",
+                statQuestions: "Вопросов", statMaxScore: "Ответ = 2 балла", statTimeTie: "Каждому участнику",
                 regHeader: "Регистрация участника", regSub: "Заполните данные для начала",
-                labelName: "Ф.И.О. (Полное имя и фамилия) *", phName: "Например: Алиев Сардорбек",
-                labelPhone: "Номер телефона *", labelSchool: "Школа города Ангрена *",
-                tieBreakerNotice: "<strong>Важное правило:</strong> Каждый правильный ответ — <strong>2 балла</strong> (Макс. <strong>60 баллов</strong>). При равных баллах выше тот, кто прошёл быстрее.",
+                labelName: "Ф.И.О. (Полное имя и фамилия) *", phName: "Например: Имамалиев Исфандиёр",
+                labelPhone: "Номер телефона *",
+                labelMahalla: "Ваша махалля (МФЙ) *", phMahalla: "Например: МФЙ Истиклол",
+                labelSchool: "Школа города Ангрена *",
+                tieBreakerNotice: "<strong>Важное правило:</strong> Каждый правильный ответ — <strong>2 балла</strong> (Макс. <strong>60 баллов</strong>). В конце выдаётся электронный сертификат.",
                 btnStartQuiz: "Начать Викторину", ptsPerQ: "балла", btnPrev: "Назад", btnNext: "Следующий вопрос", btnFinish: "Завершить",
                 resScoreLabel: "Итого Баллов", resCorrectLabel: "Правильных", resTimeLabel: "Время",
+                certReadyLabel: "✨ Ваш именной электронный сертификат готов ✨",
+                btnDownloadCert: "Скачать сертификат (PNG)",
                 btnViewLeaderboard: "Открыть Общий Рейтинг", btnRetake: "Пройти заново",
                 factsTitle: "Интересные Факты о Государственном Флаге", factsSub: "Исторические, астрономические и правовые факты.",
                 lbTitle: "Таблица Лидеров (Максимум 60 баллов)", lbSubtitle: "Сортировка: 1) Баллы (60) • 2) Минимальное время",
                 lbTabStudents: "Ученики", lbTabSchools: "Школы",
-                thRank: "#", thStudent: "Ф.И.О.", thSchool: "Школа", thScore: "Баллы (60)", thTime: "Время", thPhone: "Телефон", thAction: "Удалить", thCount: "Участников", thAvg: "Средний балл",
+                thRank: "#", thStudent: "Ф.И.О.", thSchool: "Школа", thMahalla: "Махалля", thScore: "Баллы (60)", thTime: "Время", thPhone: "Телефон", thAction: "Удалить", thCount: "Участников", thAvg: "Средний балл",
                 adminLoginTitle: "Админ-панель", adminLoginSub: "Введите секретный пароль для доступа к управлению",
                 phAdminPass: "Введите пароль...", btnAdminEnter: "Войти",
-                adminTableTitle: "Полная база участников", adminTableSub: "Все номера телефонов открыты, доступно удаление записей",
+                adminTableTitle: "Полная база участников", adminTableSub: "Все номера телефонов, махалля и управление записями",
                 btnRefresh: "Обновить", selectSchool: "— Выберите школу —"
             }
         };
@@ -746,6 +779,7 @@
                 initSchools();
                 renderFacts();
                 if (!document.getElementById('view-quiz').classList.contains('hidden')) renderCurrentQuestion(false);
+                if (lastCertificateData) drawCertificate(lastCertificateData);
                 fadeTargets.forEach(el => el.classList.remove('lang-fade-out'));
             }, 180);
         }
@@ -826,8 +860,9 @@
 
             const name = document.getElementById('input-name').value.trim();
             const phone = document.getElementById('input-phone').value.trim();
+            const mahalla = document.getElementById('input-mahalla').value.trim();
             const school = document.getElementById('input-school').value;
-            if (!name || phone.length < 13 || !school) return;
+            if (!name || phone.length < 13 || !mahalla || !school) return;
 
             isStartingQuiz = true;
             isSubmittingQuiz = false;
@@ -835,7 +870,7 @@
             startBtn.disabled = true;
 
             try {
-                activeParticipant = { full_name: name, phone, school };
+                activeParticipant = { full_name: name, phone, mahalla, school };
 
                 const [qRes, sRes] = await Promise.all([
                     fetch('/api/questions').then(r => r.json()),
@@ -942,7 +977,6 @@
                 currentQuestionIndex++;
                 renderCurrentQuestion(true);
             } else {
-                // Строгая блокировка повторных отправок (1 нажатие = 1 результат)
                 isSubmittingQuiz = true;
                 clearInterval(timerInterval);
 
@@ -965,10 +999,22 @@
                     document.getElementById('result-student-name').textContent = activeParticipant.full_name;
                     document.getElementById('result-student-school').textContent = activeParticipant.school;
 
+                    lastCertificateData = {
+                        full_name: activeParticipant.full_name,
+                        school: activeParticipant.school,
+                        score: res.score,
+                        correct_count: res.correct_count,
+                        time_ms: res.time_ms,
+                        certId: 'ANG-' + Math.floor(100000 + Math.random() * 900000)
+                    };
+
+                    drawCertificate(lastCertificateData);
+
                     document.getElementById('view-quiz').classList.add('hidden');
                     const rView = document.getElementById('view-result');
                     rView.classList.remove('hidden');
                     triggerSmoothAnim(rView);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
                 } catch (err) {
                     isSubmittingQuiz = false;
                     nextBtn.disabled = false;
@@ -978,11 +1024,221 @@
             }
         }
 
+        // --- CERTIFICATE GENERATOR ---
+        function drawStar(ctx, cx, cy, spikes, outerRadius, innerRadius, color) {
+            let rot = Math.PI / 2 * 3;
+            let x = cx;
+            let y = cy;
+            let step = Math.PI / spikes;
+            ctx.beginPath();
+            ctx.moveTo(cx, cy - outerRadius);
+            for (let i = 0; i < spikes; i++) {
+                x = cx + Math.cos(rot) * outerRadius;
+                y = cy + Math.sin(rot) * outerRadius;
+                ctx.lineTo(x, y);
+                rot += step;
+                x = cx + Math.cos(rot) * innerRadius;
+                y = cy + Math.sin(rot) * innerRadius;
+                ctx.lineTo(x, y);
+                rot += step;
+            }
+            ctx.lineTo(cx, cy - outerRadius);
+            ctx.closePath();
+            ctx.fillStyle = color;
+            ctx.fill();
+        }
+
+        function drawCertificate(data) {
+            const canvas = document.getElementById('certCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const W = canvas.width;
+            const H = canvas.height;
+
+            const bgGrad = ctx.createLinearGradient(0, 0, W, H);
+            bgGrad.addColorStop(0, '#041022');
+            bgGrad.addColorStop(0.5, '#0a2342');
+            bgGrad.addColorStop(1, '#051929');
+            ctx.fillStyle = bgGrad;
+            ctx.fillRect(0, 0, W, H);
+
+            const rad1 = ctx.createRadialGradient(250, 200, 20, 250, 200, 450);
+            rad1.addColorStop(0, 'rgba(0, 153, 181, 0.25)');
+            rad1.addColorStop(1, 'transparent');
+            ctx.fillStyle = rad1;
+            ctx.fillRect(0, 0, W, H);
+
+            const rad2 = ctx.createRadialGradient(W - 250, H - 200, 20, W - 250, H - 200, 450);
+            rad2.addColorStop(0, 'rgba(30, 181, 58, 0.2)');
+            rad2.addColorStop(1, 'transparent');
+            ctx.fillStyle = rad2;
+            ctx.fillRect(0, 0, W, H);
+
+            const drawFlagBar = (yPos, height) => {
+                ctx.fillStyle = '#0099B5';
+                ctx.fillRect(60, yPos, (W - 120) * 0.32, height);
+                ctx.fillStyle = '#CE1126';
+                ctx.fillRect(60 + (W - 120) * 0.32, yPos, (W - 120) * 0.02, height);
+                ctx.fillStyle = '#FFFFFF';
+                ctx.fillRect(60 + (W - 120) * 0.34, yPos, (W - 120) * 0.32, height);
+                ctx.fillStyle = '#CE1126';
+                ctx.fillRect(60 + (W - 120) * 0.66, yPos, (W - 120) * 0.02, height);
+                ctx.fillStyle = '#1EB53A';
+                ctx.fillRect(60 + (W - 120) * 0.68, yPos, (W - 120) * 0.32, height);
+            };
+            drawFlagBar(55, 12);
+            drawFlagBar(H - 67, 12);
+
+            ctx.strokeStyle = '#fbbf24';
+            ctx.lineWidth = 4;
+            ctx.strokeRect(60, 55, W - 120, H - 110);
+
+            ctx.strokeStyle = 'rgba(251, 191, 36, 0.35)';
+            ctx.lineWidth = 1.5;
+            ctx.strokeRect(78, 82, W - 156, H - 164);
+
+            ctx.textAlign = 'center';
+            ctx.fillStyle = '#38bdf8';
+            ctx.font = 'bold 26px "Plus Jakarta Sans", sans-serif';
+            ctx.fillText(
+                currentLang === 'uz'
+                    ? "ANGREN SHAHAR YOSHLARI VA MAKTAB O‘QUVCHILARI O‘RTASIDA"
+                    : "СРЕДИ МОЛОДЁЖИ И ШКОЛЬНИКОВ ГОРОДА АНГРЕНА",
+                W / 2, 155
+            );
+
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 30px "Plus Jakarta Sans", sans-serif';
+            ctx.fillText(
+                currentLang === 'uz'
+                    ? "O‘ZBEKISTON RESPUBLIKASI DAVLAT BAYROG‘IGA BAG‘ISHLANGAN VIKTORINA"
+                    : "ВИКТОРИНА О ГОСУДАРСТВЕННОМ ФЛАГЕ РЕСПУБЛИКИ УЗБЕКИСТАН",
+                W / 2, 200
+            );
+
+            const goldGrad = ctx.createLinearGradient(W / 2 - 300, 260, W / 2 + 300, 330);
+            goldGrad.addColorStop(0, '#fde68a');
+            goldGrad.addColorStop(0.5, '#f59e0b');
+            goldGrad.addColorStop(1, '#fde68a');
+            ctx.fillStyle = goldGrad;
+            ctx.font = '800 90px "Plus Jakarta Sans", sans-serif';
+            ctx.fillText(currentLang === 'uz' ? "SERTIFIKAT" : "СЕРТИФИКАТ", W / 2, 315);
+
+            for (let i = 0; i < 12; i++) {
+                drawStar(ctx, W / 2 - 220 + i * 40, 360, 5, 9, 4, '#fbbf24');
+            }
+
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = '500 26px "Plus Jakarta Sans", sans-serif';
+            ctx.fillText(
+                currentLang === 'uz'
+                    ? "Ushbu sertifikat bilan quyidagi ishtirokchi taqdirlanadi:"
+                    : "Настоящий сертификат вручается участнику:",
+                W / 2, 430
+            );
+
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '800 58px "Plus Jakarta Sans", sans-serif';
+            ctx.fillText(data.full_name.toUpperCase(), W / 2, 510);
+
+            ctx.strokeStyle = 'rgba(251, 191, 36, 0.6)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(W / 2 - 400, 535);
+            ctx.lineTo(W / 2 + 400, 535);
+            ctx.stroke();
+
+            ctx.fillStyle = '#38bdf8';
+            ctx.font = '700 34px "Plus Jakarta Sans", sans-serif';
+            ctx.fillText(`Angren shahri, ${data.school}`, W / 2, 590);
+
+            const boxY = 650, boxW = 340, boxH = 155, gap = 45;
+            const startX = (W - (boxW * 3 + gap * 2)) / 2;
+            const metrics = [
+                { label: currentLang === 'uz' ? "TO‘PLANGAN BALL" : "НАБРАННЫЙ БАЛЛ", val: `${data.score} / 60`, color: '#34d399' },
+                { label: currentLang === 'uz' ? "TO‘G‘RI JAVOBLAR" : "ВЕРНЫЕ ОТВЕТЫ", val: `${data.correct_count} / 30`, color: '#38bdf8' },
+                { label: currentLang === 'uz' ? "SARFLANGAN VAQT" : "ЗАТРАЧЕННОЕ ВРЕМЯ", val: `${(data.time_ms / 1000).toFixed(2)} s`, color: '#fbbf24' }
+            ];
+
+            metrics.forEach((m, i) => {
+                const bx = startX + i * (boxW + gap);
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+                ctx.beginPath();
+                ctx.roundRect(bx, boxY, boxW, boxH, 22);
+                ctx.fill();
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.16)';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                ctx.fillStyle = '#cbd5e1';
+                ctx.font = '700 20px "Plus Jakarta Sans", sans-serif';
+                ctx.fillText(m.label, bx + boxW / 2, boxY + 50);
+
+                ctx.fillStyle = m.color;
+                ctx.font = '800 48px "Plus Jakarta Sans", sans-serif';
+                ctx.fillText(m.val, bx + boxW / 2, boxY + 118);
+            });
+
+            ctx.fillStyle = '#e2e8f0';
+            ctx.font = '500 25px "Plus Jakarta Sans", sans-serif';
+            ctx.fillText(
+                currentLang === 'uz'
+                    ? "«18-noyabr — O‘zbekiston Respublikasi Davlat bayrog‘i qabul qilingan kun» munosabati bilan"
+                    : "За активное участие и высокие знания в городской онлайн-викторине ко Дню принятия",
+                W / 2, 870
+            );
+            ctx.fillText(
+                currentLang === 'uz'
+                    ? "o‘tkazilgan Angren shahar intellektual onlayn viktorinasida faol ishtirok etgani uchun berildi."
+                    : "Государственного флага Республики Узбекистан (18 ноября).",
+                W / 2, 908
+            );
+
+            const today = new Date().toLocaleDateString('ru-RU');
+            ctx.textAlign = 'left';
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = '600 22px "Plus Jakarta Sans", sans-serif';
+            ctx.fillText(currentLang === 'uz' ? `Sana: ${today}-yil` : `Дата: ${today} г.`, 130, 995);
+            ctx.fillText(`ID: ${data.certId}`, 130, 1028);
+
+            ctx.textAlign = 'center';
+            ctx.beginPath();
+            ctx.arc(W / 2, 985, 50, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(251, 191, 36, 0.12)';
+            ctx.fill();
+            ctx.strokeStyle = '#fbbf24';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            ctx.fillStyle = '#fbbf24';
+            ctx.font = '800 20px "Plus Jakarta Sans", sans-serif';
+            ctx.fillText("ANGREN", W / 2, 982);
+            ctx.font = '700 17px "Plus Jakarta Sans", sans-serif';
+            ctx.fillText("2026", W / 2, 1005);
+
+            ctx.textAlign = 'right';
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = '600 22px "Plus Jakarta Sans", sans-serif';
+            ctx.fillText(currentLang === 'uz' ? "Tashkiliy qo‘mita" : "Оргкомитет викторины", W - 130, 995);
+            ctx.fillStyle = '#38bdf8';
+            ctx.fillText("Angren shahri • 2026", W - 130, 1028);
+        }
+
+        function downloadCertificate() {
+            if (!lastCertificateData) return;
+            const canvas = document.getElementById('certCanvas');
+            const link = document.createElement('a');
+            const safeName = lastCertificateData.full_name.replace(/\s+/g, '_');
+            link.download = `Sertifikat_${safeName}_${lastCertificateData.score}ball.png`;
+            link.href = canvas.toDataURL('image/png', 1.0);
+            link.click();
+        }
+
         function resetToNewParticipant() {
             isSubmittingQuiz = false;
             sessionToken = '';
             document.getElementById('input-name').value = '';
             document.getElementById('input-phone').value = '+998 ';
+            document.getElementById('input-mahalla').value = '';
             document.getElementById('view-result').classList.add('hidden');
             const regView = document.getElementById('view-registration');
             regView.classList.remove('hidden');
@@ -1083,6 +1339,7 @@
                     <td class="py-2.5 px-3 font-bold">${r.rank}</td>
                     <td class="py-2.5 px-3 font-semibold text-white">${r.full_name}</td>
                     <td class="py-2.5 px-3 font-mono text-amber-300">${r.phone}</td>
+                    <td class="py-2.5 px-3 text-sky-300">${r.mahalla || '—'}</td>
                     <td class="py-2.5 px-3">${r.school}</td>
                     <td class="py-2.5 px-3 text-center font-bold text-emerald-400">${r.score}</td>
                     <td class="py-2.5 px-3 text-center font-mono">${(r.time_ms / 1000).toFixed(2)} s</td>
@@ -1115,8 +1372,16 @@
         function exportToCSV() {
             if (!adminRecords.length) return;
             const rows = [
-                ["Orin", "F.I.Sh.", "Telefon", "Maktab", "Ball", "Vaqt (s)"],
-                ...adminRecords.map(r => [r.rank, `"${r.full_name}"`, `"${r.phone}"`, `"${r.school}"`, r.score, (r.time_ms / 1000).toFixed(2)])
+                ["Orin", "F.I.Sh.", "Telefon", "Mahalla", "Maktab", "Ball", "Vaqt (s)"],
+                ...adminRecords.map(r => [
+                    r.rank,
+                    `"${r.full_name}"`,
+                    `"${r.phone}"`,
+                    `"${r.mahalla || ''}"`,
+                    `"${r.school}"`,
+                    r.score,
+                    (r.time_ms / 1000).toFixed(2)
+                ])
             ];
             const csv = "\uFEFF" + rows.map(e => e.join(",")).join("\n");
             const a = document.createElement('a');
