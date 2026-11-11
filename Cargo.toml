@@ -3,6 +3,14 @@ name = "angren-flag-quiz"
 version = "2.0.0"
 edition = "2021"
 
+[lib]
+name = "angren_quiz_core"
+path = "src/lib.rs"
+
+[[bin]]
+name = "main"
+path = "src/main.rs"
+
 [dependencies]
 vercel_runtime = "1.1"
 tokio = { version = "1.39", features = ["macros", "rt-multi-thread"] }
