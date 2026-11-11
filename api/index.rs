@@ -4,10 +4,13 @@ use angren_quiz_core::{
 };
 use chrono::Utc;
 use futures::stream::TryStreamExt;
-use mongodb::{bson::doc, options::FindOptions};
+use mongodb::{
+    bson::{doc, oid::ObjectId},
+    options::FindOptions,
+};
 use serde::Deserialize;
 use serde_json::json;
-use std::env;
+use std::{env, str::FromStr};
 use vercel_runtime::{run, Body, Error, Request, Response, StatusCode};
 
 #[derive(Deserialize)]
@@ -21,6 +24,12 @@ struct StartReq {
 struct SubmitReq {
     session_token: String,
     answers: Vec<usize>,
+}
+
+#[derive(Deserialize)]
+struct DeleteReq {
+    admin_key: String,
+    id: String,
 }
 
 #[tokio::main]
@@ -73,6 +82,29 @@ pub async fn handler(req: Request) -> Result<Response<Body>, Error> {
                 }
             };
 
+            let coll = get_collection().await?;
+
+            // Защита от повторной отправки одного и того же теста
+            let recent_cutoff = (Utc::now().timestamp_millis() - 15000).to_string();
+            if let Ok(Some(existing)) = coll
+                .find_one(doc! {
+                    "full_name": &session.full_name,
+                    "phone": &session.phone,
+                    "school": &session.school,
+                    "created_at": { "$gte": recent_cutoff }
+                })
+                .await
+            {
+                return json_response(
+                    StatusCode::OK,
+                    json!({
+                        "score": existing.score,
+                        "correct_count": existing.correct_count,
+                        "time_ms": existing.time_ms
+                    }),
+                );
+            }
+
             let now_ms = Utc::now().timestamp_millis();
             let elapsed_ms = (now_ms - session.started_at_ms).max(3000);
 
@@ -85,7 +117,7 @@ pub async fn handler(req: Request) -> Result<Response<Body>, Error> {
                 }
             }
 
-            let score = correct_count * 2; // 30 вопросов = 60 баллов
+            let score = correct_count * 2; // 30 вопросов * 2 балла = 60 баллов
 
             let record = ParticipantResult {
                 id: None,
@@ -98,7 +130,6 @@ pub async fn handler(req: Request) -> Result<Response<Body>, Error> {
                 created_at: Utc::now().to_rfc3339(),
             };
 
-            let coll = get_collection().await?;
             coll.insert_one(&record).await?;
 
             json_response(
@@ -113,9 +144,28 @@ pub async fn handler(req: Request) -> Result<Response<Body>, Error> {
 
         "/api/leaderboard" => {
             let query = req.uri().query().unwrap_or("");
-            let admin_key =
+            let expected_key =
                 env::var("ADMIN_PASSWORD").unwrap_or_else(|_| "angren2026".to_string());
-            let is_admin = query.contains(&format!("admin_key={}", admin_key));
+
+            let mut provided_key = None;
+            for pair in query.split('&') {
+                if let Some(val) = pair.strip_prefix("admin_key=") {
+                    provided_key = Some(val);
+                }
+            }
+
+            let is_admin = match provided_key {
+                Some(k) => {
+                    if k != expected_key {
+                        return json_response(
+                            StatusCode::UNAUTHORIZED,
+                            json!({ "error": "Noto'g'ri parol" }),
+                        );
+                    }
+                    true
+                }
+                None => false,
+            };
 
             let coll = get_collection().await?;
             let opts = FindOptions::builder()
@@ -130,6 +180,7 @@ pub async fn handler(req: Request) -> Result<Response<Body>, Error> {
                 .into_iter()
                 .enumerate()
                 .map(|(i, mut item)| {
+                    let id_str = item.id.map(|oid| oid.to_hex()).unwrap_or_default();
                     if !is_admin {
                         let l = item.phone.len();
                         if l > 4 {
@@ -137,6 +188,7 @@ pub async fn handler(req: Request) -> Result<Response<Body>, Error> {
                         }
                     }
                     json!({
+                        "id": id_str,
                         "rank": i + 1,
                         "full_name": item.full_name,
                         "phone": item.phone,
@@ -150,6 +202,27 @@ pub async fn handler(req: Request) -> Result<Response<Body>, Error> {
                 .collect();
 
             json_response(StatusCode::OK, json!({ "leaderboard": output }))
+        }
+
+        "/api/delete" => {
+            let body_bytes = req.body().to_vec();
+            let del: DeleteReq = serde_json::from_slice(&body_bytes)?;
+            let expected_key =
+                env::var("ADMIN_PASSWORD").unwrap_or_else(|_| "angren2026".to_string());
+
+            if del.admin_key != expected_key {
+                return json_response(
+                    StatusCode::UNAUTHORIZED,
+                    json!({ "error": "Noto'g'ri parol" }),
+                );
+            }
+
+            let coll = get_collection().await?;
+            if let Ok(oid) = ObjectId::from_str(&del.id) {
+                coll.delete_one(doc! { "_id": oid }).await?;
+            }
+
+            json_response(StatusCode::OK, json!({ "deleted": true }))
         }
 
         _ => json_response(StatusCode::NOT_FOUND, json!({ "error": "Not found" })),
