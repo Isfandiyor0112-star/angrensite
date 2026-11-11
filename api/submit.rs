@@ -41,7 +41,7 @@ pub async fn handler(req: Request) -> Result<Response<Body>, Error> {
         }
     }
 
-    let score = correct_count * 3; // Har bir savol 3 ball, maksimal 60 ball
+    let score = correct_count * 2; // 30 ta savol * 2 ball = maksimal 60 ball
 
     let record = ParticipantResult {
         id: None,
