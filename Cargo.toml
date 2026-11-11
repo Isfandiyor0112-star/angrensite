@@ -2,14 +2,15 @@
 name = "angren-flag-quiz"
 version = "2.0.0"
 edition = "2021"
+default-run = "index"
 
 [lib]
 name = "angren_quiz_core"
 path = "src/lib.rs"
 
 [[bin]]
-name = "main"
-path = "src/main.rs"
+name = "index"
+path = "api/index.rs"
 
 [dependencies]
 vercel_runtime = "1.1"
