@@ -103,6 +103,31 @@
             100% { transform: translate(-30px, 30px) scale(0.95); }
         }
 
+        /* Плавные анимации переходов между вкладками и блоками */
+        @keyframes slideUpFade {
+            0% {
+                opacity: 0;
+                transform: translateY(18px) scale(0.99);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .smooth-section {
+            animation: slideUpFade 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .lang-fade {
+            transition: opacity 0.22s ease, transform 0.22s ease;
+        }
+
+        .lang-fade-out {
+            opacity: 0;
+            transform: translateY(4px);
+        }
+
         .glass-noise {
             position: fixed;
             inset: 0;
@@ -125,11 +150,11 @@
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.25s ease;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .liquid-glass-interactive:hover {
-            transform: translateY(-3px);
+            transform: translateY(-4px);
             border-color: rgba(0, 153, 181, 0.5);
             box-shadow: 0 15px 35px rgba(0, 153, 181, 0.15);
         }
@@ -138,7 +163,7 @@
             background: rgba(8, 18, 34, 0.65);
             border: 1px solid rgba(255, 255, 255, 0.14);
             color: #fff;
-            transition: all 0.2s ease;
+            transition: all 0.25s ease;
         }
 
         .glass-input:focus {
@@ -160,18 +185,23 @@
             );
         }
 
+        .nav-tab {
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
         .option-btn {
-            transition: all 0.2s ease;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .option-btn:hover:not(:disabled) {
             background: rgba(0, 153, 181, 0.15);
             border-color: rgba(0, 153, 181, 0.5);
-            transform: translateX(4px);
+            transform: translateX(5px);
         }
         .option-selected {
             background: linear-gradient(135deg, rgba(0, 153, 181, 0.3), rgba(30, 181, 58, 0.2)) !important;
             border-color: #38bdf8 !important;
             box-shadow: 0 0 20px rgba(0, 153, 181, 0.3);
+            transform: translateX(5px);
         }
     </style>
 </head>
@@ -192,11 +222,11 @@
     <header class="sticky top-1.5 z-40 px-3 sm:px-6 pt-2">
         <div class="max-w-7xl mx-auto liquid-glass rounded-2xl px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
             <!-- Brand -->
-            <div class="flex items-center gap-3 cursor-pointer" onclick="switchSection('home')">
-                <div class="w-10 h-10 rounded-xl bg-slate-900 border border-white/20 flex items-center justify-center text-xl shadow-lg">
+            <div class="flex items-center gap-3 cursor-pointer group" onclick="switchSection('home')">
+                <div class="w-10 h-10 rounded-xl bg-slate-900 border border-white/20 flex items-center justify-center text-xl shadow-lg transition-transform duration-300 group-hover:scale-110">
                     🇺🇿
                 </div>
-                <div>
+                <div class="lang-fade">
                     <div class="flex items-center gap-2">
                         <span class="font-extrabold tracking-tight text-base sm:text-lg bg-clip-text text-transparent bg-gradient-to-r from-white via-sky-200 to-emerald-300" data-i18n="brandTitle">
                             BAYROQ VIKTORINASI
@@ -210,20 +240,20 @@
             </div>
 
             <!-- Navigation Buttons -->
-            <nav class="flex items-center gap-1 sm:gap-2 order-3 lg:order-2 w-full lg:w-auto justify-center border-t lg:border-t-0 border-white/10 pt-2 lg:pt-0">
-                <button onclick="switchSection('home')" id="nav-home" class="nav-tab px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition-all bg-white/15 text-white shadow-inner">
+            <nav class="flex items-center gap-1 sm:gap-2 order-3 lg:order-2 w-full lg:w-auto justify-center border-t lg:border-t-0 border-white/10 pt-2 lg:pt-0 lang-fade">
+                <button onclick="switchSection('home')" id="nav-home" class="nav-tab px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-1.5 bg-white/15 text-white shadow-inner">
                     <i class="ph-bold ph-lightning text-sky-400"></i>
                     <span data-i18n="navQuiz">Viktorina</span>
                 </button>
-                <button onclick="switchSection('facts')" id="nav-facts" class="nav-tab px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-1.5 text-slate-300 hover:text-white hover:bg-white/10 transition-all">
+                <button onclick="switchSection('facts')" id="nav-facts" class="nav-tab px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-1.5 text-slate-300 hover:text-white hover:bg-white/10">
                     <i class="ph-bold ph-sparkle text-emerald-400"></i>
                     <span data-i18n="navFacts">Qiziqarli faktlar</span>
                 </button>
-                <button onclick="switchSection('leaderboard')" id="nav-leaderboard" class="nav-tab px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-1.5 text-slate-300 hover:text-white hover:bg-white/10 transition-all">
+                <button onclick="switchSection('leaderboard')" id="nav-leaderboard" class="nav-tab px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-1.5 text-slate-300 hover:text-white hover:bg-white/10">
                     <i class="ph-bold ph-trophy text-amber-400"></i>
                     <span data-i18n="navLeaderboard">Reyting (60 ball)</span>
                 </button>
-                <button onclick="switchSection('admin')" id="nav-admin" class="nav-tab px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-1.5 text-slate-300 hover:text-white hover:bg-white/10 transition-all">
+                <button onclick="switchSection('admin')" id="nav-admin" class="nav-tab px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-1.5 text-slate-300 hover:text-white hover:bg-white/10">
                     <i class="ph-bold ph-shield-check text-rose-400"></i>
                     <span data-i18n="navAdmin">Admin</span>
                 </button>
@@ -232,10 +262,10 @@
             <!-- Language Switcher -->
             <div class="flex items-center gap-2 order-2 lg:order-3">
                 <div class="p-1 rounded-xl bg-slate-900/80 border border-white/15 flex items-center">
-                    <button id="lang-uz" onclick="setLanguage('uz')" class="px-2.5 py-1 rounded-lg text-xs font-bold transition-all bg-gradient-to-r from-uzblue to-uzgreen text-white shadow">
+                    <button id="lang-uz" onclick="setLanguage('uz')" class="px-3 py-1 rounded-lg text-xs font-bold transition-all duration-300 bg-gradient-to-r from-uzblue to-uzgreen text-white shadow">
                         O‘ZB
                     </button>
-                    <button id="lang-ru" onclick="setLanguage('ru')" class="px-2.5 py-1 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white">
+                    <button id="lang-ru" onclick="setLanguage('ru')" class="px-3 py-1 rounded-lg text-xs font-bold transition-all duration-300 text-slate-400 hover:text-white">
                         РУС
                     </button>
                 </div>
@@ -244,11 +274,11 @@
     </header>
 
     <!-- Main Content -->
-    <main class="flex-grow max-w-7xl w-full mx-auto px-3 sm:px-6 py-6 sm:py-8">
+    <main id="main-content" class="flex-grow max-w-7xl w-full mx-auto px-3 sm:px-6 py-6 sm:py-8 lang-fade">
 
         <!-- SECTION 1: HOME / REGISTRATION & QUIZ -->
-        <section id="section-home" class="space-y-8">
-            <div id="view-registration" class="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-start">
+        <section id="section-home" class="smooth-section space-y-8">
+            <div id="view-registration" class="smooth-section grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-start">
                 
                 <!-- Left Showcase -->
                 <div class="lg:col-span-7 space-y-6">
@@ -332,7 +362,7 @@
                                     F.I.Sh. (To‘liq ism va familiya) *
                                 </label>
                                 <input type="text" id="input-name" required
-                                    placeholder="Masalan: Aliyev Sardorbek Rustam o‘g‘li"
+                                    placeholder="Masalan: Aliyev Sardorbek"
                                     data-i18n-placeholder="phName"
                                     class="glass-input w-full px-4 py-3 rounded-xl text-sm">
                             </div>
@@ -357,16 +387,11 @@
                                 </select>
                             </div>
 
-                            <div id="reg-error" class="hidden p-3 rounded-xl bg-rose-500/20 border border-rose-500/40 text-rose-200 text-xs flex items-center gap-2">
-                                <i class="ph-fill ph-warning-circle text-base text-rose-400 shrink-0"></i>
-                                <span id="reg-error-text"></span>
-                            </div>
-
                             <div class="p-3.5 rounded-2xl bg-sky-500/10 border border-sky-400/25 text-xs text-sky-200 leading-relaxed" data-i18n="tieBreakerNotice">
                                 <strong>Muhim qoida:</strong> Har bir to‘g‘ri javob <strong>2 ball</strong> beradi (Maksimal <strong>60 ball</strong>). Bir xil ball to‘plagan ishtirokchilar sarflangan vaqt bo‘yicha saralanadi.
                             </div>
 
-                            <button type="submit" id="btn-start-submit" class="w-full py-4 px-6 rounded-2xl font-bold text-base text-white bg-gradient-to-r from-uzblue via-sky-500 to-uzgreen hover:brightness-110 active:scale-[0.99] transition-all shadow-xl shadow-uzblue/30 flex items-center justify-center gap-2">
+                            <button type="submit" id="btn-start-submit" class="w-full py-4 px-6 rounded-2xl font-bold text-base text-white bg-gradient-to-r from-uzblue via-sky-500 to-uzgreen hover:brightness-110 hover:-translate-y-0.5 active:scale-[0.99] transition-all duration-300 shadow-xl shadow-uzblue/30 flex items-center justify-center gap-2 disabled:opacity-50 disabled:pointer-events-none">
                                 <span data-i18n="btnStartQuiz">Viktorinani Boshlash</span>
                                 <i class="ph-bold ph-arrow-right text-lg"></i>
                             </button>
@@ -376,7 +401,7 @@
             </div>
 
             <!-- Quiz View -->
-            <div id="view-quiz" class="hidden max-w-3xl mx-auto">
+            <div id="view-quiz" class="hidden smooth-section max-w-3xl mx-auto">
                 <div class="liquid-glass rounded-3xl p-5 sm:p-8 border-t-2 border-t-uzgreen">
                     <div class="flex flex-wrap items-center justify-between gap-4 pb-5 mb-6 border-b border-white/10">
                         <div class="flex items-center gap-3">
@@ -401,19 +426,21 @@
                     </div>
 
                     <!-- Progress Bar -->
-                    <div class="w-full h-2 bg-slate-900/80 rounded-full overflow-hidden mb-6 border border-white/10">
-                        <div id="quiz-progress-bar" class="h-full rounded-full bg-gradient-to-r from-uzblue to-uzgreen transition-all duration-300" style="width: 3.3%"></div>
+                    <div class="w-full h-2.5 bg-slate-900/80 rounded-full overflow-hidden mb-6 border border-white/10">
+                        <div id="quiz-progress-bar" class="h-full rounded-full bg-gradient-to-r from-uzblue to-uzgreen transition-all duration-500 ease-out" style="width: 3.3%"></div>
                     </div>
 
-                    <!-- Question -->
-                    <div class="mb-6">
-                        <h3 id="quiz-question-text" class="text-lg sm:text-2xl font-bold text-white leading-snug">
-                            Savol yuklanmoqda...
-                        </h3>
-                    </div>
+                    <!-- Question Container with smooth fade -->
+                    <div id="question-anim-box" class="lang-fade">
+                        <div class="mb-6">
+                            <h3 id="quiz-question-text" class="text-lg sm:text-2xl font-bold text-white leading-snug">
+                                Savol yuklanmoqda...
+                            </h3>
+                        </div>
 
-                    <!-- Options -->
-                    <div id="quiz-options-list" class="space-y-3 mb-8"></div>
+                        <!-- Options -->
+                        <div id="quiz-options-list" class="space-y-3 mb-8"></div>
+                    </div>
 
                     <!-- Controls -->
                     <div class="flex items-center justify-between pt-4 border-t border-white/10">
@@ -422,7 +449,7 @@
                             <span data-i18n="btnPrev">Oldingi</span>
                         </button>
 
-                        <button type="button" onclick="nextOrFinishQuiz()" id="btn-next-q" class="px-6 py-3 rounded-xl text-xs sm:text-sm font-bold bg-gradient-to-r from-uzblue to-uzgreen text-white shadow-lg hover:brightness-110 flex items-center gap-2 transition-all">
+                        <button type="button" onclick="nextOrFinishQuiz()" id="btn-next-q" class="px-6 py-3 rounded-xl text-xs sm:text-sm font-bold bg-gradient-to-r from-uzblue to-uzgreen text-white shadow-lg hover:brightness-110 flex items-center gap-2 transition-all disabled:opacity-50 disabled:pointer-events-none">
                             <span id="btn-next-text" data-i18n="btnNext">Keyingi savol</span>
                             <i class="ph-bold ph-arrow-right"></i>
                         </button>
@@ -431,9 +458,9 @@
             </div>
 
             <!-- Result View -->
-            <div id="view-result" class="hidden max-w-3xl mx-auto space-y-6">
+            <div id="view-result" class="hidden smooth-section max-w-3xl mx-auto space-y-6">
                 <div class="liquid-glass rounded-3xl p-6 sm:p-10 text-center relative border-t-2 border-t-emerald-400">
-                    <div class="text-5xl mb-3">🏆</div>
+                    <div class="text-5xl mb-3 animate-bounce">🏆</div>
                     <h2 class="text-2xl sm:text-4xl font-extrabold text-white mb-2" id="result-student-name">Ishtirokchi</h2>
                     <p class="text-sm text-slate-300 mb-6" id="result-student-school">Angren shahri maktabi</p>
 
@@ -453,11 +480,11 @@
                     </div>
 
                     <div class="flex flex-wrap items-center justify-center gap-3">
-                        <button onclick="switchSection('leaderboard')" class="px-6 py-3.5 rounded-2xl font-bold text-sm bg-gradient-to-r from-uzblue to-uzgreen text-white shadow-lg flex items-center gap-2 hover:brightness-110">
+                        <button onclick="switchSection('leaderboard')" class="px-6 py-3.5 rounded-2xl font-bold text-sm bg-gradient-to-r from-uzblue to-uzgreen text-white shadow-lg flex items-center gap-2 hover:brightness-110 transition-all">
                             <i class="ph-bold ph-trophy text-lg"></i>
                             <span data-i18n="btnViewLeaderboard">Umumiy Reytingni Ko‘rish</span>
                         </button>
-                        <button onclick="resetToNewParticipant()" class="px-5 py-3.5 rounded-2xl font-semibold text-sm bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 flex items-center gap-2">
+                        <button onclick="resetToNewParticipant()" class="px-5 py-3.5 rounded-2xl font-semibold text-sm bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 flex items-center gap-2 transition-all">
                             <i class="ph-bold ph-arrow-counter-clockwise"></i>
                             <span data-i18n="btnRetake">Qayta topshirish</span>
                         </button>
@@ -467,7 +494,7 @@
         </section>
 
         <!-- SECTION 2: FACTS -->
-        <section id="section-facts" class="hidden space-y-6">
+        <section id="section-facts" class="hidden smooth-section space-y-6">
             <div class="liquid-glass rounded-3xl p-6 sm:p-8">
                 <h2 class="text-2xl sm:text-4xl font-extrabold text-white mb-2" data-i18n="factsTitle">
                     O‘zbekiston Davlat Bayrog‘i Haqida Qiziqarli Faktlar
@@ -478,7 +505,7 @@
         </section>
 
         <!-- SECTION 3: LEADERBOARD -->
-        <section id="section-leaderboard" class="hidden space-y-6">
+        <section id="section-leaderboard" class="hidden smooth-section space-y-6">
             <div class="liquid-glass rounded-3xl p-6 sm:p-8">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                     <div>
@@ -490,17 +517,17 @@
                         </p>
                     </div>
                     <div class="flex items-center gap-2">
-                        <button onclick="switchLeaderboardMode('students')" id="lb-tab-students" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-gradient-to-r from-uzblue to-uzgreen text-white shadow">
-                            O‘quvchilar
+                        <button onclick="switchLeaderboardMode('students')" id="lb-tab-students" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-gradient-to-r from-uzblue to-uzgreen text-white shadow transition-all">
+                            <span data-i18n="lbTabStudents">O‘quvchilar</span>
                         </button>
-                        <button onclick="switchLeaderboardMode('schools')" id="lb-tab-schools" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10">
-                            Maktablar
+                        <button onclick="switchLeaderboardMode('schools')" id="lb-tab-schools" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 transition-all">
+                            <span data-i18n="lbTabSchools">Maktablar</span>
                         </button>
                     </div>
                 </div>
 
                 <!-- Students Table -->
-                <div id="lb-students-table-wrap" class="overflow-x-auto rounded-2xl border border-white/10 bg-slate-950/50">
+                <div id="lb-students-table-wrap" class="smooth-section overflow-x-auto rounded-2xl border border-white/10 bg-slate-950/50">
                     <table class="w-full text-left border-collapse">
                         <thead>
                             <tr class="border-b border-white/10 text-[11px] uppercase tracking-wider text-slate-400 bg-white/5">
@@ -516,14 +543,14 @@
                 </div>
 
                 <!-- Schools Table -->
-                <div id="lb-schools-table-wrap" class="hidden overflow-x-auto rounded-2xl border border-white/10 bg-slate-950/50">
+                <div id="lb-schools-table-wrap" class="hidden smooth-section overflow-x-auto rounded-2xl border border-white/10 bg-slate-950/50">
                     <table class="w-full text-left border-collapse">
                         <thead>
                             <tr class="border-b border-white/10 text-[11px] uppercase tracking-wider text-slate-400 bg-white/5">
                                 <th class="py-3 px-4 font-bold">#</th>
-                                <th class="py-3 px-4 font-bold">Maktab nomi</th>
-                                <th class="py-3 px-4 font-bold text-center">Ishtirokchilar</th>
-                                <th class="py-3 px-4 font-bold text-center">O‘rtacha ball</th>
+                                <th class="py-3 px-4 font-bold" data-i18n="thSchool">Maktab nomi</th>
+                                <th class="py-3 px-4 font-bold text-center" data-i18n="thCount">Ishtirokchilar</th>
+                                <th class="py-3 px-4 font-bold text-center" data-i18n="thAvg">O‘rtacha ball</th>
                             </tr>
                         </thead>
                         <tbody id="lb-schools-tbody" class="divide-y divide-white/5 text-sm"></tbody>
@@ -533,36 +560,49 @@
         </section>
 
         <!-- SECTION 4: ADMIN -->
-        <section id="section-admin" class="hidden space-y-6">
+        <section id="section-admin" class="hidden smooth-section space-y-6">
             <div id="admin-login-gate" class="max-w-md mx-auto liquid-glass rounded-3xl p-6 sm:p-8 text-center">
                 <div class="w-12 h-12 rounded-2xl bg-rose-500/20 text-rose-400 flex items-center justify-center mx-auto mb-4">
                     <i class="ph-bold ph-lock-key text-2xl"></i>
                 </div>
                 <h2 class="text-xl font-bold text-white mb-2" data-i18n="adminLoginTitle">Admin Panel</h2>
+                <p class="text-xs text-slate-400 mb-5" data-i18n="adminLoginSub">Boshqaruv paneliga kirish uchun maxfiy parolni kiriting</p>
                 <form onsubmit="unlockAdmin(event)" class="space-y-4">
-                    <input type="password" id="admin-pass-input" placeholder="Parol (angren2026)" class="glass-input w-full px-4 py-2.5 rounded-xl text-center font-mono text-sm">
-                    <button type="submit" class="w-full py-2.5 rounded-xl font-bold text-sm bg-rose-500 text-white">Kirish</button>
+                    <input type="password" id="admin-pass-input" required placeholder="Parolni kiriting..." data-i18n-placeholder="phAdminPass" class="glass-input w-full px-4 py-3 rounded-xl text-center font-mono text-sm">
+                    <div id="admin-err-msg" class="hidden text-xs text-rose-400 font-semibold"></div>
+                    <button type="submit" id="btn-admin-login" class="w-full py-3 rounded-xl font-bold text-sm bg-gradient-to-r from-rose-500 to-amber-500 text-white shadow-lg hover:brightness-110 transition-all">
+                        <span data-i18n="btnAdminEnter">Kirish</span>
+                    </button>
                 </form>
             </div>
 
-            <div id="admin-dashboard" class="hidden space-y-6">
+            <div id="admin-dashboard" class="hidden smooth-section space-y-6">
                 <div class="liquid-glass rounded-3xl p-6 sm:p-8">
                     <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
-                        <h2 class="text-xl font-bold text-white">Ishtirokchilarning To‘liq Natijalari (Admin)</h2>
-                        <button onclick="exportToCSV()" class="px-4 py-2 rounded-xl text-xs font-bold bg-emerald-600 text-white flex items-center gap-2">
-                            <i class="ph-bold ph-download-simple"></i> CSV (Excel)
-                        </button>
+                        <div>
+                            <h2 class="text-xl font-bold text-white" data-i18n="adminTableTitle">Ishtirokchilarning To‘liq Natijalari</h2>
+                            <p class="text-xs text-slate-400 mt-0.5" data-i18n="adminTableSub">Barcha telefon raqamlar ochiq va keraksiz testlarni o‘chirish mumkin</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="refreshAdminData()" class="px-4 py-2 rounded-xl text-xs font-bold bg-white/10 hover:bg-white/20 text-white flex items-center gap-1.5 transition-all">
+                                <i class="ph-bold ph-arrows-clockwise"></i> <span data-i18n="btnRefresh">Yangilash</span>
+                            </button>
+                            <button onclick="exportToCSV()" class="px-4 py-2 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white flex items-center gap-1.5 transition-all shadow-lg">
+                                <i class="ph-bold ph-download-simple"></i> CSV (Excel)
+                            </button>
+                        </div>
                     </div>
                     <div class="overflow-x-auto rounded-2xl border border-white/10 bg-slate-950/60">
                         <table class="w-full text-left border-collapse text-xs sm:text-sm">
                             <thead>
                                 <tr class="border-b border-white/10 uppercase text-slate-400 bg-white/5">
                                     <th class="py-3 px-3">#</th>
-                                    <th class="py-3 px-3">F.I.Sh.</th>
-                                    <th class="py-3 px-3">Telefon</th>
-                                    <th class="py-3 px-3">Maktab</th>
-                                    <th class="py-3 px-3 text-center">Ball</th>
-                                    <th class="py-3 px-3 text-center">Vaqt</th>
+                                    <th class="py-3 px-3" data-i18n="thStudent">F.I.Sh.</th>
+                                    <th class="py-3 px-3" data-i18n="thPhone">Telefon</th>
+                                    <th class="py-3 px-3" data-i18n="thSchool">Maktab</th>
+                                    <th class="py-3 px-3 text-center" data-i18n="thScore">Ball</th>
+                                    <th class="py-3 px-3 text-center" data-i18n="thTime">Vaqt</th>
+                                    <th class="py-3 px-3 text-right" data-i18n="thAction">O‘chirish</th>
                                 </tr>
                             </thead>
                             <tbody id="admin-records-tbody" class="divide-y divide-white/5"></tbody>
@@ -587,6 +627,12 @@
         let timerInterval = null;
         let quizStartTime = 0;
         let activeParticipant = null;
+        let sessionToken = '';
+        let isStartingQuiz = false;
+        let isSubmittingQuiz = false;
+        let currentAdminKey = '';
+        let adminRecords = [];
+        let lbCache = [];
 
         const ANGREN_SCHOOLS = [
             "Angren shahar Muhandislik maktabi",
@@ -620,8 +666,12 @@
                 btnViewLeaderboard: "Umumiy Reytingni Ko‘rish", btnRetake: "Qayta topshirish",
                 factsTitle: "O‘zbekiston Davlat Bayrog‘i Haqida Qiziqarli Faktlar", factsSub: "Tarixiy, astronomik va me'moriy ma'lumotlar.",
                 lbTitle: "Eng Yuqori Natijalar Jadvali (Maksimal 60 ball)", lbSubtitle: "Saralash tartibi: 1) Ball (60) • 2) Eng qisqa vaqt",
-                thRank: "#", thStudent: "F.I.Sh.", thSchool: "Maktab", thScore: "Ball (60)", thTime: "Vaqt",
-                adminLoginTitle: "Admin Panel", selectSchool: "— Maktabingizni tanlang —"
+                lbTabStudents: "O‘quvchilar", lbTabSchools: "Maktablar",
+                thRank: "#", thStudent: "F.I.Sh.", thSchool: "Maktab", thScore: "Ball (60)", thTime: "Vaqt", thPhone: "Telefon", thAction: "O‘chirish", thCount: "Ishtirokchilar", thAvg: "O‘rtacha ball",
+                adminLoginTitle: "Admin Panel", adminLoginSub: "Boshqaruv paneliga kirish uchun maxfiy parolni kiriting",
+                phAdminPass: "Parolni kiriting...", btnAdminEnter: "Kirish",
+                adminTableTitle: "Ishtirokchilarning To‘liq Natijalari", adminTableSub: "Barcha telefon raqamlar ochiq va test natijalarini o‘chirish mumkin",
+                btnRefresh: "Yangilash", selectSchool: "— Maktabingizni tanlang —"
             },
             ru: {
                 brandTitle: "ВИКТОРИНА О ФЛАГЕ",
@@ -646,8 +696,12 @@
                 btnViewLeaderboard: "Открыть Общий Рейтинг", btnRetake: "Пройти заново",
                 factsTitle: "Интересные Факты о Государственном Флаге", factsSub: "Исторические, астрономические и правовые факты.",
                 lbTitle: "Таблица Лидеров (Максимум 60 баллов)", lbSubtitle: "Сортировка: 1) Баллы (60) • 2) Минимальное время",
-                thRank: "#", thStudent: "Ф.И.О.", thSchool: "Школа", thScore: "Баллы (60)", thTime: "Время",
-                adminLoginTitle: "Админ-панель", selectSchool: "— Выберите школу —"
+                lbTabStudents: "Ученики", lbTabSchools: "Школы",
+                thRank: "#", thStudent: "Ф.И.О.", thSchool: "Школа", thScore: "Баллы (60)", thTime: "Время", thPhone: "Телефон", thAction: "Удалить", thCount: "Участников", thAvg: "Средний балл",
+                adminLoginTitle: "Админ-панель", adminLoginSub: "Введите секретный пароль для доступа к управлению",
+                phAdminPass: "Введите пароль...", btnAdminEnter: "Войти",
+                adminTableTitle: "Полная база участников", adminTableSub: "Все номера телефонов открыты, доступно удаление записей",
+                btnRefresh: "Обновить", selectSchool: "— Выберите школу —"
             }
         };
 
@@ -672,18 +726,28 @@
 
         function initSchools() {
             const sel = document.getElementById('input-school');
+            const prevVal = sel.value;
             sel.innerHTML = `<option value="" disabled selected>${I18N[currentLang].selectSchool}</option>` + 
                 ANGREN_SCHOOLS.map(s => `<option value="${s}">${s}</option>`).join('');
+            if (prevVal) sel.value = prevVal;
         }
 
         function setLanguage(l) {
+            if (currentLang === l) return;
             currentLang = l;
-            document.getElementById('lang-uz').className = l === 'uz' ? 'px-2.5 py-1 rounded-lg text-xs font-bold bg-gradient-to-r from-uzblue to-uzgreen text-white shadow' : 'px-2.5 py-1 rounded-lg text-xs font-bold text-slate-400 hover:text-white';
-            document.getElementById('lang-ru').className = l === 'ru' ? 'px-2.5 py-1 rounded-lg text-xs font-bold bg-gradient-to-r from-uzblue to-uzgreen text-white shadow' : 'px-2.5 py-1 rounded-lg text-xs font-bold text-slate-400 hover:text-white';
-            applyTranslations();
-            initSchools();
-            renderFacts();
-            if (!document.getElementById('view-quiz').classList.contains('hidden')) renderCurrentQuestion();
+            document.getElementById('lang-uz').className = l === 'uz' ? 'px-3 py-1 rounded-lg text-xs font-bold transition-all duration-300 bg-gradient-to-r from-uzblue to-uzgreen text-white shadow' : 'px-3 py-1 rounded-lg text-xs font-bold transition-all duration-300 text-slate-400 hover:text-white';
+            document.getElementById('lang-ru').className = l === 'ru' ? 'px-3 py-1 rounded-lg text-xs font-bold transition-all duration-300 bg-gradient-to-r from-uzblue to-uzgreen text-white shadow' : 'px-3 py-1 rounded-lg text-xs font-bold transition-all duration-300 text-slate-400 hover:text-white';
+
+            const fadeTargets = document.querySelectorAll('.lang-fade');
+            fadeTargets.forEach(el => el.classList.add('lang-fade-out'));
+
+            setTimeout(() => {
+                applyTranslations();
+                initSchools();
+                renderFacts();
+                if (!document.getElementById('view-quiz').classList.contains('hidden')) renderCurrentQuestion(false);
+                fadeTargets.forEach(el => el.classList.remove('lang-fade-out'));
+            }, 180);
         }
 
         function applyTranslations() {
@@ -700,7 +764,7 @@
 
         function renderFacts() {
             document.getElementById('facts-grid').innerHTML = FACTS_DATA.map((f, i) => `
-                <div class="liquid-glass rounded-2xl p-5">
+                <div class="liquid-glass-interactive rounded-2xl p-5">
                     <div class="text-xs font-bold text-sky-400 font-mono mb-1">#${i + 1}</div>
                     <h3 class="text-base font-bold text-white mb-2">${currentLang === 'uz' ? f.tUz : f.tRu}</h3>
                     <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">${currentLang === 'uz' ? f.dUz : f.dRu}</p>
@@ -708,14 +772,24 @@
             `).join('');
         }
 
+        function triggerSmoothAnim(el) {
+            el.classList.remove('smooth-section');
+            void el.offsetWidth;
+            el.classList.add('smooth-section');
+        }
+
         function switchSection(sec) {
             ['home', 'facts', 'leaderboard', 'admin'].forEach(s => {
                 document.getElementById(`section-${s}`).classList.add('hidden');
                 document.getElementById(`nav-${s}`).className = 'nav-tab px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-1.5 text-slate-300 hover:text-white hover:bg-white/10';
             });
-            document.getElementById(`section-${sec}`).classList.remove('hidden');
+            const target = document.getElementById(`section-${sec}`);
+            target.classList.remove('hidden');
+            triggerSmoothAnim(target);
+
             document.getElementById(`nav-${sec}`).className = 'nav-tab px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-1.5 bg-white/15 text-white shadow-inner';
             if (sec === 'leaderboard') loadLeaderboard();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function startCountdown() {
@@ -746,85 +820,119 @@
             inp.value = f;
         }
 
-        let sessionToken = '';
-
         async function startQuiz(e) {
             e.preventDefault();
+            if (isStartingQuiz) return;
+
             const name = document.getElementById('input-name').value.trim();
             const phone = document.getElementById('input-phone').value.trim();
             const school = document.getElementById('input-school').value;
+            if (!name || phone.length < 13 || !school) return;
 
-            activeParticipant = { full_name: name, phone, school };
+            isStartingQuiz = true;
+            isSubmittingQuiz = false;
+            const startBtn = document.getElementById('btn-start-submit');
+            startBtn.disabled = true;
 
-            const [qRes, sRes] = await Promise.all([
-                fetch('/api/questions').then(r => r.json()),
-                fetch('/api/start', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(activeParticipant)
-                }).then(r => r.json())
-            ]);
+            try {
+                activeParticipant = { full_name: name, phone, school };
 
-            questionsData = qRes.questions;
-            sessionToken = sRes.session_token;
-            userAnswers = new Array(questionsData.length).fill(null);
-            currentQuestionIndex = 0;
+                const [qRes, sRes] = await Promise.all([
+                    fetch('/api/questions').then(r => r.json()),
+                    fetch('/api/start', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(activeParticipant)
+                    }).then(r => r.json())
+                ]);
 
-            document.getElementById('quiz-participant-label').textContent = name;
-            document.getElementById('quiz-school-label').textContent = school;
+                questionsData = qRes.questions;
+                sessionToken = sRes.session_token;
+                userAnswers = new Array(questionsData.length).fill(null);
+                currentQuestionIndex = 0;
 
-            document.getElementById('view-registration').classList.add('hidden');
-            document.getElementById('view-result').classList.add('hidden');
-            document.getElementById('view-quiz').classList.remove('hidden');
+                document.getElementById('quiz-participant-label').textContent = name;
+                document.getElementById('quiz-school-label').textContent = school;
 
-            quizStartTime = performance.now();
-            timerInterval = setInterval(() => {
-                const diff = (performance.now() - quizStartTime) / 1000;
-                const m = String(Math.floor(diff / 60)).padStart(2, '0');
-                const s = (diff % 60).toFixed(2).padStart(5, '0');
-                document.getElementById('quiz-timer').textContent = `${m}:${s}`;
-            }, 40);
+                document.getElementById('view-registration').classList.add('hidden');
+                document.getElementById('view-result').classList.add('hidden');
+                const qView = document.getElementById('view-quiz');
+                qView.classList.remove('hidden');
+                triggerSmoothAnim(qView);
 
-            renderCurrentQuestion();
+                quizStartTime = performance.now();
+                if (timerInterval) clearInterval(timerInterval);
+                timerInterval = setInterval(() => {
+                    const diff = (performance.now() - quizStartTime) / 1000;
+                    const m = String(Math.floor(diff / 60)).padStart(2, '0');
+                    const s = (diff % 60).toFixed(2).padStart(5, '0');
+                    document.getElementById('quiz-timer').textContent = `${m}:${s}`;
+                }, 40);
+
+                renderCurrentQuestion(false);
+            } catch (err) {
+                alert(currentLang === 'uz' ? "Xatolik yuz berdi. Qayta urinib ko‘ring." : "Ошибка соединения. Попробуйте ещё раз.");
+            } finally {
+                isStartingQuiz = false;
+                startBtn.disabled = false;
+            }
         }
 
-        function renderCurrentQuestion() {
-            const q = questionsData[currentQuestionIndex];
-            const total = questionsData.length;
-            document.getElementById('quiz-q-badge').textContent = `${currentQuestionIndex + 1}/${total}`;
-            document.getElementById('quiz-progress-bar').style.width = `${((currentQuestionIndex + 1) / total) * 100}%`;
-            document.getElementById('quiz-question-text').textContent = currentLang === 'uz' ? q.q_uz : q.q_ru;
+        function renderCurrentQuestion(animate = true) {
+            const box = document.getElementById('question-anim-box');
+            const updateDOM = () => {
+                const q = questionsData[currentQuestionIndex];
+                const total = questionsData.length;
+                document.getElementById('quiz-q-badge').textContent = `${currentQuestionIndex + 1}/${total}`;
+                document.getElementById('quiz-progress-bar').style.width = `${((currentQuestionIndex + 1) / total) * 100}%`;
+                document.getElementById('quiz-question-text').textContent = currentLang === 'uz' ? q.q_uz : q.q_ru;
 
-            const opts = currentLang === 'uz' ? q.options_uz : q.options_ru;
-            const letters = ['A', 'B', 'C', 'D'];
-            const selected = userAnswers[currentQuestionIndex];
+                const opts = currentLang === 'uz' ? q.options_uz : q.options_ru;
+                const letters = ['A', 'B', 'C', 'D'];
+                const selected = userAnswers[currentQuestionIndex];
 
-            document.getElementById('quiz-options-list').innerHTML = opts.map((opt, i) => `
-                <button type="button" onclick="selectOption(${i})" class="option-btn w-full text-left p-4 rounded-2xl border ${selected === i ? 'option-selected' : 'bg-slate-900/60 border-white/10 text-slate-200'} flex items-center gap-3">
-                    <span class="w-8 h-8 rounded-xl ${selected === i ? 'bg-white text-slate-950' : 'bg-white/10 text-sky-300'} font-mono font-bold text-xs flex items-center justify-center shrink-0">
-                        ${letters[i]}
-                    </span>
-                    <span class="text-sm font-medium">${opt}</span>
-                </button>
-            `).join('');
+                document.getElementById('quiz-options-list').innerHTML = opts.map((opt, i) => `
+                    <button type="button" onclick="selectOption(${i})" class="option-btn w-full text-left p-4 rounded-2xl border ${selected === i ? 'option-selected' : 'bg-slate-900/60 border-white/10 text-slate-200'} flex items-center gap-3">
+                        <span class="w-8 h-8 rounded-xl ${selected === i ? 'bg-white text-slate-950' : 'bg-white/10 text-sky-300'} font-mono font-bold text-xs flex items-center justify-center shrink-0 transition-all">
+                            ${letters[i]}
+                        </span>
+                        <span class="text-sm font-medium">${opt}</span>
+                    </button>
+                `).join('');
 
-            document.getElementById('btn-prev-q').disabled = currentQuestionIndex === 0;
-            document.getElementById('btn-next-text').textContent = currentQuestionIndex === total - 1 ? I18N[currentLang].btnFinish : I18N[currentLang].btnNext;
+                document.getElementById('btn-prev-q').disabled = currentQuestionIndex === 0 || isSubmittingQuiz;
+                document.getElementById('btn-next-q').disabled = isSubmittingQuiz;
+                document.getElementById('btn-next-text').textContent = currentQuestionIndex === total - 1 ? I18N[currentLang].btnFinish : I18N[currentLang].btnNext;
+            };
+
+            if (animate) {
+                box.classList.add('lang-fade-out');
+                setTimeout(() => {
+                    updateDOM();
+                    box.classList.remove('lang-fade-out');
+                }, 140);
+            } else {
+                updateDOM();
+            }
         }
 
         function selectOption(i) {
+            if (isSubmittingQuiz) return;
             userAnswers[currentQuestionIndex] = i;
-            renderCurrentQuestion();
+            renderCurrentQuestion(false);
         }
 
         function prevQuestion() {
+            if (isSubmittingQuiz) return;
             if (currentQuestionIndex > 0) {
                 currentQuestionIndex--;
-                renderCurrentQuestion();
+                renderCurrentQuestion(true);
             }
         }
 
         async function nextOrFinishQuiz() {
+            if (isSubmittingQuiz) return;
+
             if (userAnswers[currentQuestionIndex] === null) {
                 alert(currentLang === 'uz' ? "Javob variantini tanlang!" : "Выберите вариант ответа!");
                 return;
@@ -832,41 +940,61 @@
 
             if (currentQuestionIndex < questionsData.length - 1) {
                 currentQuestionIndex++;
-                renderCurrentQuestion();
+                renderCurrentQuestion(true);
             } else {
+                // Строгая блокировка повторных отправок (1 нажатие = 1 результат)
+                isSubmittingQuiz = true;
                 clearInterval(timerInterval);
-                const res = await fetch('/api/submit', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ session_token: sessionToken, answers: userAnswers })
-                }).then(r => r.json());
 
-                document.getElementById('res-score-val').textContent = `${res.score} / 60`;
-                document.getElementById('res-correct-val').textContent = `${res.correct_count} / 30`;
-                document.getElementById('res-time-val').textContent = `${(res.time_ms / 1000).toFixed(2)} s`;
-                document.getElementById('result-student-name').textContent = activeParticipant.full_name;
-                document.getElementById('result-student-school').textContent = activeParticipant.school;
+                const nextBtn = document.getElementById('btn-next-q');
+                const prevBtn = document.getElementById('btn-prev-q');
+                nextBtn.disabled = true;
+                prevBtn.disabled = true;
+                document.getElementById('btn-next-text').textContent = currentLang === 'uz' ? "Saqlanmoqda..." : "Сохранение...";
 
-                document.getElementById('view-quiz').classList.add('hidden');
-                document.getElementById('view-result').classList.remove('hidden');
+                try {
+                    const res = await fetch('/api/submit', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ session_token: sessionToken, answers: userAnswers })
+                    }).then(r => r.json());
+
+                    document.getElementById('res-score-val').textContent = `${res.score} / 60`;
+                    document.getElementById('res-correct-val').textContent = `${res.correct_count} / 30`;
+                    document.getElementById('res-time-val').textContent = `${(res.time_ms / 1000).toFixed(2)} s`;
+                    document.getElementById('result-student-name').textContent = activeParticipant.full_name;
+                    document.getElementById('result-student-school').textContent = activeParticipant.school;
+
+                    document.getElementById('view-quiz').classList.add('hidden');
+                    const rView = document.getElementById('view-result');
+                    rView.classList.remove('hidden');
+                    triggerSmoothAnim(rView);
+                } catch (err) {
+                    isSubmittingQuiz = false;
+                    nextBtn.disabled = false;
+                    prevBtn.disabled = false;
+                    document.getElementById('btn-next-text').textContent = I18N[currentLang].btnFinish;
+                }
             }
         }
 
         function resetToNewParticipant() {
+            isSubmittingQuiz = false;
+            sessionToken = '';
             document.getElementById('input-name').value = '';
             document.getElementById('input-phone').value = '+998 ';
             document.getElementById('view-result').classList.add('hidden');
-            document.getElementById('view-registration').classList.remove('hidden');
+            const regView = document.getElementById('view-registration');
+            regView.classList.remove('hidden');
+            triggerSmoothAnim(regView);
         }
-
-        let lbCache = [];
 
         async function loadLeaderboard() {
             const res = await fetch('/api/leaderboard').then(r => r.json());
             lbCache = res.leaderboard || [];
 
             document.getElementById('lb-tbody').innerHTML = lbCache.map(r => `
-                <tr class="hover:bg-white/5">
+                <tr class="hover:bg-white/5 transition-colors">
                     <td class="py-3 px-4 font-bold">${r.rank === 1 ? '🥇 1' : r.rank === 2 ? '🥈 2' : r.rank === 3 ? '🥉 3' : r.rank}</td>
                     <td class="py-3 px-4 font-semibold text-white">${r.full_name}</td>
                     <td class="py-3 px-4 text-slate-300">${r.school}</td>
@@ -875,7 +1003,6 @@
                 </tr>
             `).join('');
 
-            // Schools aggregation
             const scMap = {};
             lbCache.forEach(r => {
                 if (!scMap[r.school]) scMap[r.school] = { count: 0, score: 0 };
@@ -888,7 +1015,7 @@
             })).sort((a, b) => b.avg - a.avg || b.count - a.count);
 
             document.getElementById('lb-schools-tbody').innerHTML = scList.map((s, i) => `
-                <tr class="hover:bg-white/5">
+                <tr class="hover:bg-white/5 transition-colors">
                     <td class="py-3 px-4 font-bold">${i + 1}</td>
                     <td class="py-3 px-4 font-semibold text-white">${s.school}</td>
                     <td class="py-3 px-4 text-center">${s.count}</td>
@@ -899,44 +1026,94 @@
 
         function switchLeaderboardMode(m) {
             leaderboardMode = m;
+            const sWrap = document.getElementById('lb-students-table-wrap');
+            const cWrap = document.getElementById('lb-schools-table-wrap');
             if (m === 'students') {
-                document.getElementById('lb-students-table-wrap').classList.remove('hidden');
-                document.getElementById('lb-schools-table-wrap').classList.add('hidden');
-                document.getElementById('lb-tab-students').className = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-gradient-to-r from-uzblue to-uzgreen text-white shadow';
-                document.getElementById('lb-tab-schools').className = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10';
+                sWrap.classList.remove('hidden');
+                cWrap.classList.add('hidden');
+                triggerSmoothAnim(sWrap);
+                document.getElementById('lb-tab-students').className = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-gradient-to-r from-uzblue to-uzgreen text-white shadow transition-all';
+                document.getElementById('lb-tab-schools').className = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 transition-all';
             } else {
-                document.getElementById('lb-students-table-wrap').classList.add('hidden');
-                document.getElementById('lb-schools-table-wrap').classList.remove('hidden');
-                document.getElementById('lb-tab-schools').className = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-gradient-to-r from-uzblue to-uzgreen text-white shadow';
-                document.getElementById('lb-tab-students').className = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10';
+                sWrap.classList.add('hidden');
+                cWrap.classList.remove('hidden');
+                triggerSmoothAnim(cWrap);
+                document.getElementById('lb-tab-schools').className = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-gradient-to-r from-uzblue to-uzgreen text-white shadow transition-all';
+                document.getElementById('lb-tab-students').className = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 transition-all';
             }
         }
-
-        let adminRecords = [];
 
         async function unlockAdmin(e) {
             e.preventDefault();
             const pass = document.getElementById('admin-pass-input').value.trim();
-            const res = await fetch(`/api/leaderboard?admin_key=${encodeURIComponent(pass)}`).then(r => r.json());
+            const errBox = document.getElementById('admin-err-msg');
+            errBox.classList.add('hidden');
+
+            const response = await fetch(`/api/leaderboard?admin_key=${encodeURIComponent(pass)}`);
+            if (!response.ok) {
+                errBox.textContent = currentLang === 'uz' ? "Parol noto‘g‘ri!" : "Неверный пароль!";
+                errBox.classList.remove('hidden');
+                return;
+            }
+
+            const res = await response.json();
+            currentAdminKey = pass;
             adminRecords = res.leaderboard || [];
 
             document.getElementById('admin-login-gate').classList.add('hidden');
-            document.getElementById('admin-dashboard').classList.remove('hidden');
+            const dash = document.getElementById('admin-dashboard');
+            dash.classList.remove('hidden');
+            triggerSmoothAnim(dash);
+            renderAdminRows();
+        }
 
+        async function refreshAdminData() {
+            if (!currentAdminKey) return;
+            const response = await fetch(`/api/leaderboard?admin_key=${encodeURIComponent(currentAdminKey)}`);
+            if (response.ok) {
+                const res = await response.json();
+                adminRecords = res.leaderboard || [];
+                renderAdminRows();
+            }
+        }
+
+        function renderAdminRows() {
             document.getElementById('admin-records-tbody').innerHTML = adminRecords.map(r => `
-                <tr class="hover:bg-white/5">
+                <tr class="hover:bg-white/5 transition-colors">
                     <td class="py-2.5 px-3 font-bold">${r.rank}</td>
                     <td class="py-2.5 px-3 font-semibold text-white">${r.full_name}</td>
                     <td class="py-2.5 px-3 font-mono text-amber-300">${r.phone}</td>
                     <td class="py-2.5 px-3">${r.school}</td>
                     <td class="py-2.5 px-3 text-center font-bold text-emerald-400">${r.score}</td>
                     <td class="py-2.5 px-3 text-center font-mono">${(r.time_ms / 1000).toFixed(2)} s</td>
+                    <td class="py-2.5 px-3 text-right">
+                        <button onclick="deleteRecord('${r.id}')" class="px-2.5 py-1.5 rounded-lg bg-rose-500/20 hover:bg-rose-500/40 text-rose-300 text-xs font-bold transition-colors" title="O‘chirish">
+                            <i class="ph-bold ph-trash"></i>
+                        </button>
+                    </td>
                 </tr>
             `).join('');
         }
 
+        async function deleteRecord(id) {
+            if (!id || !currentAdminKey) return;
+            const confirmMsg = currentLang === 'uz' ? "Ushbu natijani bazadan o‘chirishni tasdiqlaysizmi?" : "Удалить этот результат из базы?";
+            if (!confirm(confirmMsg)) return;
+
+            const response = await fetch('/api/delete', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ admin_key: currentAdminKey, id })
+            });
+
+            if (response.ok) {
+                await refreshAdminData();
+                await loadLeaderboard();
+            }
+        }
+
         function exportToCSV() {
-            if (!adminRecords.length) return alert("Avval parolni kiriting!");
+            if (!adminRecords.length) return;
             const rows = [
                 ["Orin", "F.I.Sh.", "Telefon", "Maktab", "Ball", "Vaqt (s)"],
                 ...adminRecords.map(r => [r.rank, `"${r.full_name}"`, `"${r.phone}"`, `"${r.school}"`, r.score, (r.time_ms / 1000).toFixed(2)])
