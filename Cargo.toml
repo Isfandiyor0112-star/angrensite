@@ -7,6 +7,22 @@ edition = "2021"
 name = "angren_bayroq"
 path = "src/lib.rs"
 
+[[bin]]
+name = "questions"
+path = "api/questions.rs"
+
+[[bin]]
+name = "start"
+path = "api/start.rs"
+
+[[bin]]
+name = "submit"
+path = "api/submit.rs"
+
+[[bin]]
+name = "leaderboard"
+path = "api/leaderboard.rs"
+
 [dependencies]
 vercel_runtime = "1.1.2"
 tokio = { version = "1.38", features = ["macros", "rt-multi-thread"] }
