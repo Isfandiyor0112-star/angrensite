@@ -18,6 +18,8 @@ struct StartReq {
     full_name: String,
     phone: String,
     school: String,
+    #[serde(default)]
+    mahalla: String,
 }
 
 #[derive(Deserialize)]
@@ -55,6 +57,7 @@ pub async fn handler(req: Request) -> Result<Response<Body>, Error> {
                 full_name: data.full_name.trim().to_string(),
                 phone: data.phone.trim().to_string(),
                 school: data.school.trim().to_string(),
+                mahalla: data.mahalla.trim().to_string(),
                 started_at_ms: now_ms,
             };
 
@@ -124,6 +127,7 @@ pub async fn handler(req: Request) -> Result<Response<Body>, Error> {
                 full_name: session.full_name,
                 phone: session.phone,
                 school: session.school,
+                mahalla: session.mahalla,
                 score,
                 correct_count,
                 time_ms: elapsed_ms,
@@ -181,6 +185,7 @@ pub async fn handler(req: Request) -> Result<Response<Body>, Error> {
                 .enumerate()
                 .map(|(i, mut item)| {
                     let id_str = item.id.map(|oid| oid.to_hex()).unwrap_or_default();
+                    let mahalla_val = if is_admin { item.mahalla.clone() } else { String::new() };
                     if !is_admin {
                         let l = item.phone.len();
                         if l > 4 {
@@ -193,6 +198,7 @@ pub async fn handler(req: Request) -> Result<Response<Body>, Error> {
                         "full_name": item.full_name,
                         "phone": item.phone,
                         "school": item.school,
+                        "mahalla": mahalla_val,
                         "score": item.score,
                         "correct_count": item.correct_count,
                         "time_ms": item.time_ms,
