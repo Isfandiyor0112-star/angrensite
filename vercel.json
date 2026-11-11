@@ -1,11 +1,4 @@
 {
-  "functions": {
-    "api/main.rs": {
-      "runtime": "vercel-rust@latest",
-      "memory": 1024,
-      "maxDuration": 10
-    }
-  },
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/main" },
     { "source": "/(.*)", "destination": "/public/index.html" }
