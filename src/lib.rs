@@ -26,7 +26,7 @@ pub struct SessionPayload {
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct ParticipantResult {
     #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
-    pub id: Option<mongodb::bson::oid::ObjectId>,
+    pub id: Option<ObjectId>,
     pub full_name: String,
     pub phone: String,
     pub school: String,
@@ -53,7 +53,7 @@ pub struct InternalQuestion {
     pub q_ru: &'static str,
     pub options_uz: [&'static str; 4],
     pub options_ru: [&'static str; 4],
-    pub correct_index: usize, // Faqat serverda saqlanadi (0, 1, 2 yoki 3)
+    pub correct_index: usize,
 }
 
 pub const QUESTIONS: [InternalQuestion; 30] = [
@@ -133,10 +133,10 @@ pub const QUESTIONS: [InternalQuestion; 30] = [
     },
     InternalQuestion {
         id: 9,
-        q_uz: "Yangi oy va yulduzlar to‘plami joylashgan to‘g‘ri to‘rtburchakning o‘lchami qanday?",
-        q_ru: "Каков размер прямоугольника, в который вписаны полумесяц и звёзды?",
-        options_uz: ["45 x 30 sm", "30 x 25 sm", "50 x 35 sm", "40 x 20 sm"],
-        options_ru: ["45 x 30 см", "30 x 25 см", "50 x 35 см", "40 x 20 см"],
+        q_uz: "Yangi oy va 12 ta yulduz to‘plami joylashgan shartli to‘g‘ri to‘rtburchakning o‘lchami qanday?",
+        q_ru: "Каков размер условного прямоугольника, в котором расположены полумесяц и 12 звёзд?",
+        options_uz: ["45 x 30 sm", "75 x 30 sm", "50 x 35 sm", "60 x 25 sm"],
+        options_ru: ["45 x 30 см", "75 x 30 см", "50 x 35 см", "60 x 25 см"],
         correct_index: 1,
     },
     InternalQuestion {
@@ -149,10 +149,20 @@ pub const QUESTIONS: [InternalQuestion; 30] = [
     },
     InternalQuestion {
         id: 11,
-        q_uz: "Qatorlardagi yulduzlar orasidagi (gorizontal va vertikal) masofa necha santimetrni tashkil etadi?",
-        q_ru: "Каково расстояние (по горизонтали и вертикали) между звёздами в рядах?",
-        options_uz: ["6 sm", "4 sm", "5 sm", "8 sm"],
-        options_ru: ["6 см", "4 см", "5 см", "8 см"],
+        q_uz: "Qatorlardagi yulduzlarning chetlari (aylanalari) hamda markazlari orasidagi masofa necha santimetrni tashkil etadi?",
+        q_ru: "Каково расстояние между краями (окружностями) и между центрами звёзд в рядах?",
+        options_uz: [
+            "Chetlari orasida 6 sm (markazlari orasida 12 sm)",
+            "Chetlari orasida 4 sm (markazlari orasida 8 sm)",
+            "Chetlari orasida 5 sm (markazlari orasida 10 sm)",
+            "Chetlari orasida 8 sm (markazlari orasida 16 sm)"
+        ],
+        options_ru: [
+            "Между краями 6 см (между центрами 12 см)",
+            "Между краями 4 см (между центрами 8 см)",
+            "Между краями 5 см (между центрами 10 см)",
+            "Между краями 8 см (между центрами 16 см)"
+        ],
         correct_index: 0,
     },
     InternalQuestion {
@@ -257,16 +267,16 @@ pub const QUESTIONS: [InternalQuestion; 30] = [
     },
     InternalQuestion {
         id: 22,
-        q_uz: "Yangi oy va yulduzlar joylashgan 30x25 sm to‘rtburchak moviy yo‘lning yuqori va pastki chetidan necha sm masofada joylashgan?",
-        q_ru: "На каком расстоянии от верхнего и нижнего краёв голубой полосы расположен прямоугольник (30x25 см) с полумесяцем и звёздами?",
+        q_uz: "Yangi oy va yulduzlar joylashgan 75x30 sm to‘rtburchak moviy yo‘lning (40 sm) yuqori va pastki chetidan necha sm masofada joylashgan?",
+        q_ru: "На каком расстоянии от верхнего и нижнего краёв голубой полосы (40 см) расположен прямоугольник (75x30 см) с полумесяцем и звёздами?",
         options_uz: ["10 sm", "5 sm", "7,5 sm", "12,5 sm"],
         options_ru: ["10 см", "5 см", "7,5 см", "12,5 см"],
         correct_index: 1,
     },
     InternalQuestion {
         id: 23,
-        q_uz: "Yulduzlarning quyi (uchinchi) qatori yangi oyning pastki chetidan necha santimetr masofada joylashadi?",
-        q_ru: "На каком расстоянии от нижнего края полумесяца располагается нижний (третий) ряд звёзд?",
+        q_uz: "Yulduzlarning quyi qatori yangi oyning pastki uchidan gorizontal bo‘yicha necha santimetr masofada boshlanadi?",
+        q_ru: "На каком расстоянии по горизонтали от нижнего края полумесяца начинается нижний ряд звёзд?",
         options_uz: ["2 sm", "5 sm", "3,5 sm", "6 sm"],
         options_ru: ["2 см", "5 см", "3,5 см", "6 см"],
         correct_index: 2,
@@ -346,7 +356,7 @@ pub const QUESTIONS: [InternalQuestion; 30] = [
         q_uz: "Davlat bayrog‘i boshqa davlatlar bayroqlari bilan bir vaqtda ko‘tarilganda uning o‘lchami qanday bo‘lishi shart?",
         q_ru: "Каким должен быть размер Государственного флага при одновременном поднятии с флагами других государств?",
         options_uz: [
-            "Boshqa bayroqlardan kichik bo‘lmasligi va kamida ikki barobar pastda turmasligi shart",
+            "Boshqa bayroqlardan kichik bo‘lmasligi va pastda turmasligi shart",
             "Boshqa bayroqlardan kichikroq bo‘lishi mumkin",
             "Faqat oq fonda joylashtirilishi shart",
             "Boshqa bayroqlardan chap tomonda pastroq osilishi kerak"
@@ -393,7 +403,6 @@ pub async fn get_collection() -> Result<Collection<ParticipantResult>, mongodb::
     let db = client.database("angren_flag_quiz");
     let coll = db.collection::<ParticipantResult>("results");
 
-    // 60 ball bo'yicha kamayish va millisekund bo'yicha o'sish tartibida indeks
     let index = IndexModel::builder()
         .keys(doc! { "score": -1, "time_ms": 1 })
         .options(IndexOptions::builder().build())
